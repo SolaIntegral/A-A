@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>プロジェクト作成</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    header, nav {
+      margin-bottom: 20px;
+    }
+    form div {
+      margin-bottom: 10px;
+    }
+    label {
+      display: inline-block;
+      width: 120px;
+    }
+    input[type="text"] {
+      width: 300px;
+    }
+    textarea {
+      width: 300px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>プロジェクト作成</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">ダッシュボード</a> |
+    <a href="project-list.html">プロジェクト一覧</a> |
+    <a href="task-list.html">タスク一覧</a> |
+    <a href="task-create.html">タスク作成</a> |
+    <a href="project-create.html">プロジェクト作成</a>
+  </nav>
+
+  <section>
+    <form id="projectForm">
+      <div>
+        <label for="projectName">プロジェクト名</label>
+        <input type="text" id="projectName" required />
+      </div>
+      <div>
+        <label for="projectMemo">メモ</label>
+        <textarea id="projectMemo"></textarea>
+      </div>
+      <button type="submit">作成</button>
+    </form>
+  </section>
+
+  <script src="common.js"></script>
+  <script>
+    (function(){
+      document.getElementById("projectForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("projectName").value.trim();
+        const memo = document.getElementById("projectMemo").value.trim();
+
+        if (!name) {
+          alert("プロジェクト名は必須です。");
+          return;
+        }
+
+        const newProject = {
+          name,
+          memo
+        };
+        addProject(newProject);
+
+        alert("プロジェクトを作成しました");
+        window.location.href = "project-list.html";
+      });
+    })();
+  </script>
+</body>
+</html>

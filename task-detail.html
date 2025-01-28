@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>タスク詳細</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    header, nav {
+      margin-bottom: 20px;
+    }
+    label {
+      margin-right: 10px;
+    }
+    .priority-high {
+      color: red;
+      font-weight: bold;
+    }
+    .priority-mid {
+      color: orange;
+    }
+    .priority-low {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>タスク詳細</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">ダッシュボード</a> |
+    <a href="project-list.html">プロジェクト一覧</a> |
+    <a href="task-list.html">タスク一覧</a> |
+    <a href="task-create.html">タスク作成</a> |
+    <a href="project-create.html">プロジェクト作成</a>
+  </nav>
+
+  <section id="taskDetail">
+    <!-- JSで動的に挿入 -->
+  </section>
+
+  <script src="common.js"></script>
+  <script>
+    (function(){
+      const urlParams = new URLSearchParams(window.location.search);
+      const taskId = urlParams.get("id");
+      const task = getTaskById(taskId);
+
+      if(!task) {
+        document.body.innerHTML = "<p>該当のタスクが見つかりません。</p>";
+        return;
+      }
+
+      const project = getProjectById(task.projectId);
+      let priorityClass = "";
+      if (task.priority === "絶対") priorityClass = "priority-high";
+      else if (task.priority === "できたら") priorityClass = "priority-mid";
+      else priorityClass = "priority-low";
+
+      const section = document.getElementById("taskDetail");
+      section.innerHTML = `
+        <h2>${task.name}</h2>
+        <p>種類: ${task.type}</p>
+        <p>所属プロジェクト: ${project ? project.name : "（なし）"}</p>
+        <p>締め切り: ${task.deadline}</p>
+        <p>作業予定日: ${task.scheduledDate}</p>
+        <p class="${priorityClass}">優先度: ${task.priority}</p>
+        <div>
+          <h3>フェーズ管理</h3>
+          <label>
+            <input type="checkbox" id="phase1" ${task.phase1Done ? "checked" : ""}/>
+            フェーズ1完了
+          </label>
+          <label>
+            <input type="checkbox" id="phase2" ${task.phase2Done ? "checked" : ""}/>
+            フェーズ2完了
+          </label>
+          <label>
+            <input type="checkbox" id="phase3" ${task.phase3Done ? "checked" : ""}/>
+            フェーズ3完了
+          </label>
+        </div>
+        <button id="updateBtn">更新</button>
+      `;
+
+      document.getElementById("updateBtn").addEventListener("click", () => {
+        const updatedTask = {
+          ...task,
+          phase1Done: document.getElementById("phase1").checked,
+          phase2Done: document.getElementById("phase2").checked,
+          phase3Done: document.getElementById("phase3").checked,
+        };
+        updateTask(updatedTask);
+        alert("タスクを更新しました");
+        window.location.reload();
+      });
+    })();
+  </script>
+</body>
+</html>

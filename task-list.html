@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>タスク一覧</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    header, nav {
+      margin-bottom: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    .priority-high {
+      color: red;
+      font-weight: bold;
+    }
+    .priority-mid {
+      color: orange;
+    }
+    .priority-low {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>タスク一覧</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">ダッシュボード</a> |
+    <a href="project-list.html">プロジェクト一覧</a> |
+    <a href="task-list.html">タスク一覧</a> |
+    <a href="task-create.html">タスク作成</a> |
+    <a href="project-create.html">プロジェクト作成</a>
+  </nav>
+
+  <section>
+    <table id="taskTable">
+      <thead>
+        <tr>
+          <th>タスク名</th>
+          <th>種類</th>
+          <th>所属プロジェクト</th>
+          <th>締め切り</th>
+          <th>作業予定日</th>
+          <th>フェーズ完了数</th>
+          <th>優先度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JSで埋め込み -->
+      </tbody>
+    </table>
+  </section>
+
+  <script src="common.js"></script>
+  <script>
+    (function(){
+      const tasks = getTasks();
+      const projects = getProjects();
+      const tbody = document.getElementById("taskTable").querySelector("tbody");
+
+      tasks.forEach(task => {
+        const project = projects.find(p => p.id === task.projectId);
+
+        let phaseCount = 0;
+        if (task.phase1Done) phaseCount++;
+        if (task.phase2Done) phaseCount++;
+        if (task.phase3Done) phaseCount++;
+
+        let priorityClass = "";
+        if (task.priority === "絶対") priorityClass = "priority-high";
+        else if (task.priority === "できたら") priorityClass = "priority-mid";
+        else priorityClass = "priority-low";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><a href="task-detail.html?id=${task.id}">${task.name}</a></td>
+          <td>${task.type}</td>
+          <td>${project ? project.name : "（なし）"}</td>
+          <td>${task.deadline}</td>
+          <td>${task.scheduledDate}</td>
+          <td>${phaseCount}/3</td>
+          <td class="${priorityClass}">${task.priority}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })();
+  </script>
+</body>
+</html>

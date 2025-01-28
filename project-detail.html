@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>プロジェクト詳細</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    header, nav {
+      margin-bottom: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    .priority-high {
+      color: red;
+      font-weight: bold;
+    }
+    .priority-mid {
+      color: orange;
+    }
+    .priority-low {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>プロジェクト詳細</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">ダッシュボード</a> |
+    <a href="project-list.html">プロジェクト一覧</a> |
+    <a href="task-list.html">タスク一覧</a> |
+    <a href="task-create.html">タスク作成</a> |
+    <a href="project-create.html">プロジェクト作成</a>
+  </nav>
+
+  <section>
+    <h2 id="projectName"></h2>
+    <p id="projectMemo"></p>
+  </section>
+
+  <section>
+    <h3>このプロジェクトのタスク一覧</h3>
+    <table id="taskTable">
+      <thead>
+        <tr>
+          <th>タスク名</th>
+          <th>種類</th>
+          <th>締め切り</th>
+          <th>作業予定日</th>
+          <th>フェーズ完了数</th>
+          <th>優先度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JSで埋め込み -->
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <a id="createTaskLink" href="#">このプロジェクトにタスクを追加</a>
+  </section>
+
+  <script src="common.js"></script>
+  <script>
+    (function(){
+      // URLパラメータからidを取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const projectId = urlParams.get("id");
+
+      const project = getProjectById(projectId);
+      if(!project) {
+        document.body.innerHTML = "<p>該当のプロジェクトが見つかりません。</p>";
+        return;
+      }
+
+      // プロジェクト情報を表示
+      document.getElementById("projectName").textContent = project.name;
+      document.getElementById("projectMemo").textContent = project.memo ? project.memo : "";
+
+      // タスク一覧を表示
+      const tasks = getTasksByProjectId(projectId);
+      const tbody = document.getElementById("taskTable").querySelector("tbody");
+
+      tasks.forEach(task => {
+        let phaseCount = 0;
+        if (task.phase1Done) phaseCount++;
+        if (task.phase2Done) phaseCount++;
+        if (task.phase3Done) phaseCount++;
+
+        let priorityClass = "";
+        if (task.priority === "絶対") priorityClass = "priority-high";
+        else if (task.priority === "できたら") priorityClass = "priority-mid";
+        else priorityClass = "priority-low";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><a href="task-detail.html?id=${task.id}">${task.name}</a></td>
+          <td>${task.type}</td>
+          <td>${task.deadline}</td>
+          <td>${task.scheduledDate}</td>
+          <td>${phaseCount}/3</td>
+          <td class="${priorityClass}">${task.priority}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 「このプロジェクトにタスクを追加」リンク
+      const createTaskLink = document.getElementById("createTaskLink");
+      createTaskLink.setAttribute("href", `task-create.html?projectId=${projectId}`);
+    })();
+  </script>
+</body>
+</html>

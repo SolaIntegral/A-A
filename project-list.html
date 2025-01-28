@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>プロジェクト一覧</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    header, nav {
+      margin-bottom: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>プロジェクト一覧</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">ダッシュボード</a> |
+    <a href="project-list.html">プロジェクト一覧</a> |
+    <a href="task-list.html">タスク一覧</a> |
+    <a href="task-create.html">タスク作成</a> |
+    <a href="project-create.html">プロジェクト作成</a>
+  </nav>
+
+  <section>
+    <table id="projectTable">
+      <thead>
+        <tr>
+          <th>プロジェクト名</th>
+          <th>メモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JSで埋め込み -->
+      </tbody>
+    </table>
+  </section>
+
+  <script src="common.js"></script>
+  <script>
+    (function(){
+      const projects = getProjects();
+      const tbody = document.getElementById("projectTable").querySelector("tbody");
+
+      projects.forEach(project => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><a href="project-detail.html?id=${project.id}">${project.name}</a></td>
+          <td>${project.memo ? project.memo : ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })();
+  </script>
+</body>
+</html>
