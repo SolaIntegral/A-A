@@ -1,116 +1,52 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>ダッシュボード</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 20px;
-    }
-    header, nav {
-      margin-bottom: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-    .priority-high {
-      color: red;
-      font-weight: bold;
-    }
-    .priority-mid {
-      color: orange;
-    }
-    .priority-low {
-      color: green;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>タスク管理サイト ダッシュボード</h1>
-  </header>
-
   <nav>
-    <a href="index.html">ダッシュボード</a> |
-    <a href="project-list.html">プロジェクト一覧</a> |
-    <a href="task-list.html">タスク一覧</a> |
-    <a href="task-create.html">タスク作成</a> |
-    <a href="project-create.html">プロジェクト作成</a>
+    <a href="index.html">🏠 ダッシュボード</a>
+    <a href="project-list.html">📂 プロジェクト一覧</a>
+    <a href="task-list.html">✅ タスク一覧</a>
+    <a href="mislenge-create.html">➕ Mislenge作成</a>
   </nav>
 
-  <section>
-    <h2>本日の予定タスク・やること</h2>
-    <table id="todayTasksTable">
+  <div class="container">
+    <h1>📅 本日の予定</h1>
+    <table>
       <thead>
         <tr>
-          <th>タスク名</th>
-          <th>種類</th>
-          <th>プロジェクト</th>
-          <th>締め切り</th>
-          <th>フェーズ完了数</th>
-          <th>優先度</th>
+          <th>種別</th><th>名称</th><th>関連プロジェクト</th><th>予定日</th><th>フェーズ</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- JSで埋め込み -->
-      </tbody>
+      <tbody id="todayTable"></tbody>
     </table>
-  </section>
+  </div>
 
   <script src="common.js"></script>
   <script>
     (function() {
       const today = getTodayString();
-      const tasks = getTasks();
-      const projects = getProjects();
-      const tbody = document.getElementById("todayTasksTable").querySelector("tbody");
+      const mislengeList = getMislenge();
+      const tbody = document.getElementById("todayTable");
 
-      // 今日が作業予定日のタスクをフィルタ
-      const todayTasks = tasks.filter(t => t.scheduledDate === today);
+      mislengeList
+        .filter(m => m.scheduledDate === today || m.type === "Schedule" && m.scheduleDate === today)
+        .forEach(m => {
+          let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
 
-      todayTasks.forEach(task => {
-        const tr = document.createElement("tr");
-
-        // プロジェクト名を取得
-        const project = projects.find(p => p.id === task.projectId);
-
-        // フェーズ完了数を数える
-        let phaseCount = 0;
-        if (task.phase1Done) phaseCount++;
-        if (task.phase2Done) phaseCount++;
-        if (task.phase3Done) phaseCount++;
-
-        // 優先度に応じたクラス付け
-        let priorityClass = "";
-        if (task.priority === "絶対") {
-          priorityClass = "priority-high";
-        } else if (task.priority === "できたら") {
-          priorityClass = "priority-mid";
-        } else {
-          priorityClass = "priority-low";
-        }
-
-        tr.innerHTML = `
-          <td><a href="task-detail.html?id=${task.id}">${task.name}</a></td>
-          <td>${task.type}</td>
-          <td>${project ? project.name : "（なし）"}</td>
-          <td>${task.deadline}</td>
-          <td>${phaseCount}/3</td>
-          <td class="${priorityClass}">${task.priority}</td>
-        `;
-
-        tbody.appendChild(tr);
-      });
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${m.type}</td>
+            <td>${m.name}</td>
+            <td>${m.projectName || "なし"}</td>
+            <td>${m.scheduledDate || m.scheduleDate}</td>
+            <td>${phaseHTML}</td>
+          `;
+          tbody.appendChild(tr);
+        });
     })();
   </script>
 </body>

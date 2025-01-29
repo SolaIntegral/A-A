@@ -1,70 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>プロジェクト一覧</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 20px;
-    }
-    header, nav {
-      margin-bottom: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>プロジェクト一覧</h1>
-  </header>
-
   <nav>
-    <a href="index.html">ダッシュボード</a> |
-    <a href="project-list.html">プロジェクト一覧</a> |
-    <a href="task-list.html">タスク一覧</a> |
-    <a href="task-create.html">タスク作成</a> |
-    <a href="project-create.html">プロジェクト作成</a>
+    <a href="index.html">🏠 ダッシュボード</a>
+    <a href="project-list.html">📂 プロジェクト一覧</a>
+    <a href="task-list.html">✅ タスク一覧</a>
+    <a href="mislenge-create.html">➕ Mislenge作成</a>
   </nav>
 
-  <section>
-    <table id="projectTable">
-      <thead>
-        <tr>
-          <th>プロジェクト名</th>
-          <th>メモ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- JSで埋め込み -->
-      </tbody>
-    </table>
-  </section>
+  <div class="container">
+    <h1>📂 プロジェクト一覧</h1>
+    <div id="projectList"></div>
+  </div>
+
+  <div id="popup" class="popup">
+    <h2 id="popupTitle"></h2>
+    <ul id="popupList"></ul>
+    <button onclick="closePopup()">閉じる</button>
+  </div>
 
   <script src="common.js"></script>
   <script>
-    (function(){
-      const projects = getProjects();
-      const tbody = document.getElementById("projectTable").querySelector("tbody");
+    function showPopup(projectId) {
+      const project = getProjects().find(p => p.id === projectId);
+      const mislenge = getMislengeByProjectId(projectId);
+      document.getElementById("popupTitle").textContent = project.name;
+      const popupList = document.getElementById("popupList");
+      popupList.innerHTML = mislenge.map(m => `<li>${m.name}</li>`).join("");
+      document.getElementById("popup").classList.add("active");
+    }
 
-      projects.forEach(project => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><a href="project-detail.html?id=${project.id}">${project.name}</a></td>
-          <td>${project.memo ? project.memo : ""}</td>
-        `;
-        tbody.appendChild(tr);
+    function closePopup() {
+      document.getElementById("popup").classList.remove("active");
+    }
+
+    (function() {
+      const projects = getProjects();
+      const projectList = document.getElementById("projectList");
+
+      projects.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "project-card";
+        div.textContent = p.name;
+        div.onclick = () => showPopup(p.id);
+        projectList.appendChild(div);
       });
     })();
   </script>
