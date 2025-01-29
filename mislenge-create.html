@@ -37,6 +37,7 @@
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
     <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
+    <button onclick="logout()">🚪 ログアウト</button>
   </nav>
 
   <div class="container">
@@ -143,14 +144,19 @@
     });
 
     (function() {
+      // プロジェクトリストを取得してセレクトボックスに追加
       const projectSelect = document.getElementById("projectId");
-      getProjects().forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = p.name;
-        projectSelect.appendChild(opt);
-      });
+      loadProjectsFromFirestore();
+      setTimeout(() => {
+        getProjects().forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+      }, 1000);
 
+      // Mislenge 作成処理
       document.getElementById("mislengeForm").addEventListener("submit", function(e) {
         e.preventDefault();
         const type = document.getElementById("type").value;
@@ -182,6 +188,7 @@
         window.location.href = "task-list.html";
       });
 
+      // プロジェクト作成処理
       document.getElementById("projectForm").addEventListener("submit", function(e) {
         e.preventDefault();
         const project = {

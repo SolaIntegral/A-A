@@ -11,6 +11,7 @@
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
     <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
+    <button onclick="logout()">🚪 ログアウト</button>
   </nav>
 
   <div class="container">
@@ -28,41 +29,39 @@
   <script src="common.js"></script>
   <script>
     (function() {
-      const tasks = getMislenge()
-        .filter(m => m.type === "Task")
-        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      setTimeout(() => {
+        const tasks = getMislenge()
+          .filter(m => m.type === "Task")
+          .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
-      const projects = getProjects();
-      const tbody = document.getElementById("taskTable");
+        const projects = getProjects();
+        const tbody = document.getElementById("taskTable");
 
-      tasks.forEach(task => {
-        const project = projects.find(p => p.id === task.projectId);
-        let phaseHTML = `${task.phase1 ? '✅' : '❌'} ${task.phase2 ? '✅' : '❌'} ${task.phase3 ? '✅' : '❌'}`;
+        tasks.forEach(task => {
+          const project = projects.find(p => p.id === task.projectId);
+          let phaseHTML = `${task.phase1 ? '✅' : '❌'} ${task.phase2 ? '✅' : '❌'} ${task.phase3 ? '✅' : '❌'}`;
 
-        let priorityClass = task.priority === "絶対" ? "priority-high" : task.priority === "できたら" ? "priority-mid" : "priority-low";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${task.name}</td>
+            <td>${project ? project.name : "（なし）"}</td>
+            <td>${task.deadline}</td>
+            <td>${task.scheduledDate}</td>
+            <td>${phaseHTML}</td>
+            <td>${task.priority}</td>
+            <td><button onclick="handleDelete('${task.id}')">削除</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${task.name}</td>
-          <td>${project ? project.name : "（なし）"}</td>
-          <td>${task.deadline}</td>
-          <td>${task.scheduledDate}</td>
-          <td>${phaseHTML}</td>
-          <td class="${priorityClass}">${task.priority}</td>
-          <td>
-            <button onclick="handleDelete('${task.id}')">削除</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      window.handleDelete = function(mislengeId) {
-        if (confirm("このタスクを削除しますか？")) {
-          deleteMislenge(mislengeId);
-          alert("削除しました");
-          window.location.reload();
-        }
-      };
+        window.handleDelete = function(mislengeId) {
+          if (confirm("このタスクを削除しますか？")) {
+            deleteMislenge(mislengeId);
+            alert("削除しました");
+            window.location.reload();
+          }
+        };
+      }, 1000);
     })();
   </script>
 </body>

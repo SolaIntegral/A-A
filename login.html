@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔑 ログイン</h1>
+    <button onclick="loginWithGoogle()">Google でログイン</button>
+    
+    <h2>または</h2>
+    <input type="email" id="email" placeholder="メールアドレス" required>
+    <input type="password" id="password" placeholder="パスワード" required>
+    <button id="loginBtn">ログイン</button>
+    <button id="registerBtn">新規登録</button>
+  </div>
+  <script src="common.js"></script>
+<script>
+  window.addEventListener("load", function() {
+    document.getElementById("loginBtn").addEventListener("click", function() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      if (typeof loginWithEmail !== "undefined") {
+        loginWithEmail(email, password);
+      } else {
+        console.error("loginWithEmail is not defined");
+      }
+    });
+
+    document.getElementById("registerBtn").addEventListener("click", function() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      if (typeof registerWithEmail !== "undefined") {
+        registerWithEmail(email, password);
+      } else {
+        console.error("registerWithEmail is not defined");
+      }
+    });
+  });
+</script>
+
+
+  
+</body>
+</html>

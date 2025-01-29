@@ -10,7 +10,8 @@
     <a href="index.html">🏠 ダッシュボード</a>
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
-    <a href="mislenge-create.html">➕ Mislenge作成</a>
+    <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
+    <button onclick="logout()">🚪 ログアウト</button>
   </nav>
 
   <div class="container">
@@ -28,25 +29,27 @@
   <script src="common.js"></script>
   <script>
     (function() {
-      const today = getTodayString();
-      const mislengeList = getMislenge();
-      const tbody = document.getElementById("todayTable");
+      setTimeout(() => {
+        const today = getTodayString();
+        const mislengeList = getMislenge();
+        const tbody = document.getElementById("todayTable");
 
-      mislengeList
-        .filter(m => m.scheduledDate === today || m.type === "Schedule" && m.scheduleDate === today)
-        .forEach(m => {
-          let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
+        mislengeList
+          .filter(m => m.scheduledDate === today || m.scheduleDate === today)
+          .forEach(m => {
+            let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
 
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${m.type}</td>
-            <td>${m.name}</td>
-            <td>${m.projectName || "なし"}</td>
-            <td>${m.scheduledDate || m.scheduleDate}</td>
-            <td>${phaseHTML}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${m.type}</td>
+              <td>${m.name}</td>
+              <td>${m.projectId ? getProjects().find(p => p.id === m.projectId)?.name || "なし" : "なし"}</td>
+              <td>${m.scheduledDate || m.scheduleDate}</td>
+              <td>${phaseHTML}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+      }, 1000);
     })();
   </script>
 </body>
