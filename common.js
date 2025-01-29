@@ -48,3 +48,22 @@ function addMislenge(mislenge) {
 function getMislengeByProjectId(projectId) {
   return getMislenge().filter(m => m.projectId === projectId);
 }
+
+/* 削除機能 */
+function deleteProject(projectId) {
+    // プロジェクト削除
+    let projects = getProjects();
+    projects = projects.filter(p => p.id !== projectId);
+    saveProjects(projects);
+  
+    // 関連する Mislenge も削除
+    let mislenge = getMislenge();
+    mislenge = mislenge.filter(m => m.projectId !== projectId);
+    saveMislenge(mislenge);
+  }
+  
+  function deleteMislenge(mislengeId) {
+    let mislenge = getMislenge();
+    mislenge = mislenge.filter(m => m.id !== mislengeId);
+    saveMislenge(mislenge);
+  }

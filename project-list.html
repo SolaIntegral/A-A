@@ -10,7 +10,7 @@
     <a href="index.html">🏠 ダッシュボード</a>
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
-    <a href="mislenge-create.html">➕ Mislenge作成</a>
+    <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
   </nav>
 
   <div class="container">
@@ -18,6 +18,7 @@
     <div id="projectList"></div>
   </div>
 
+  <!-- ポップアップ（プロジェクト詳細） -->
   <div id="popup" class="popup">
     <h2 id="popupTitle"></h2>
     <ul id="popupList"></ul>
@@ -29,9 +30,11 @@
     function showPopup(projectId) {
       const project = getProjects().find(p => p.id === projectId);
       const mislenge = getMislengeByProjectId(projectId);
+      
       document.getElementById("popupTitle").textContent = project.name;
       const popupList = document.getElementById("popupList");
       popupList.innerHTML = mislenge.map(m => `<li>${m.name}</li>`).join("");
+
       document.getElementById("popup").classList.add("active");
     }
 
@@ -43,13 +46,26 @@
       const projects = getProjects();
       const projectList = document.getElementById("projectList");
 
-      projects.forEach(p => {
+      projects.forEach(project => {
         const div = document.createElement("div");
         div.className = "project-card";
-        div.textContent = p.name;
-        div.onclick = () => showPopup(p.id);
+        div.innerHTML = `
+          <h3>${project.name}</h3>
+          <p>開始日: ${project.startDate || "未設定"}</p>
+          <p>終了日: ${project.endDate || "未設定"}</p>
+          <button class="view-btn" onclick="showPopup('${project.id}')">詳細</button>
+          <button class="delete-btn" onclick="handleDelete('${project.id}')">削除</button>
+        `;
         projectList.appendChild(div);
       });
+
+      window.handleDelete = function(projectId) {
+        if (confirm("このプロジェクトを削除しますか？関連するタスクも削除されます。")) {
+          deleteProject(projectId);
+          alert("削除しました");
+          window.location.reload();
+        }
+      };
     })();
   </script>
 </body>

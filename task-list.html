@@ -10,7 +10,7 @@
     <a href="index.html">🏠 ダッシュボード</a>
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
-    <a href="mislenge-create.html">➕ Mislenge作成</a>
+    <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
   </nav>
 
   <div class="container">
@@ -18,7 +18,7 @@
     <table>
       <thead>
         <tr>
-          <th>Task名</th><th>関連プロジェクト</th><th>締め切り日</th><th>予定日</th><th>フェーズ</th><th>優先度</th>
+          <th>Task名</th><th>関連プロジェクト</th><th>締め切り日</th><th>予定日</th><th>フェーズ</th><th>優先度</th><th>操作</th>
         </tr>
       </thead>
       <tbody id="taskTable"></tbody>
@@ -49,9 +49,20 @@
           <td>${task.scheduledDate}</td>
           <td>${phaseHTML}</td>
           <td class="${priorityClass}">${task.priority}</td>
+          <td>
+            <button onclick="handleDelete('${task.id}')">削除</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
+
+      window.handleDelete = function(mislengeId) {
+        if (confirm("このタスクを削除しますか？")) {
+          deleteMislenge(mislengeId);
+          alert("削除しました");
+          window.location.reload();
+        }
+      };
     })();
   </script>
 </body>
