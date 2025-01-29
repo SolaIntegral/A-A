@@ -16,30 +16,26 @@
     <button id="loginBtn">ログイン</button>
     <button id="registerBtn">新規登録</button>
   </div>
-  <script src="common.js"></script>
-<script>
-  window.addEventListener("load", function() {
-    document.getElementById("loginBtn").addEventListener("click", function() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      if (typeof loginWithEmail !== "undefined") {
-        loginWithEmail(email, password);
-      } else {
-        console.error("loginWithEmail is not defined");
-      }
-    });
+  <script type="module" src="common.js"></script>
 
-    document.getElementById("registerBtn").addEventListener("click", function() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      if (typeof registerWithEmail !== "undefined") {
+  <script type="module">
+    import { loginWithEmail, registerWithEmail } from "./common.js";
+  
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("loginBtn").addEventListener("click", function() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        loginWithEmail(email, password);
+      });
+  
+      document.getElementById("registerBtn").addEventListener("click", function() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
         registerWithEmail(email, password);
-      } else {
-        console.error("registerWithEmail is not defined");
-      }
+      });
     });
-  });
-</script>
+  </script>
+  
 
 
   
