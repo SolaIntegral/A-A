@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ダッシュボード</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">🏠 ダッシュボード</a>
+    <a href="project-list.html">📂 プロジェクト一覧</a>
+    <a href="task-list.html">✅ タスク一覧</a>
+    <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
+    <button onclick="logout()">🚪 ログアウト</button>
+  </nav>
+
+  <div class="container">
+    <h1>📅 本日の予定</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>種別</th><th>名称</th><th>関連プロジェクト</th><th>予定日</th><th>フェーズ</th>
+        </tr>
+      </thead>
+      <tbody id="todayTable"></tbody>
+    </table>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    (function() {
+      setTimeout(() => {
+        const today = getTodayString();
+        const mislengeList = getMislenge();
+        const tbody = document.getElementById("todayTable");
+
+        mislengeList
+          .filter(m => m.scheduledDate === today || m.scheduleDate === today)
+          .forEach(m => {
+            let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${m.type}</td>
+              <td>${m.name}</td>
+              <td>${m.projectId ? getProjects().find(p => p.id === m.projectId)?.name || "なし" : "なし"}</td>
+              <td>${m.scheduledDate || m.scheduleDate}</td>
+              <td>${phaseHTML}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
