@@ -4,135 +4,63 @@
   <meta charset="UTF-8">
   <title>Mislenge & Project 作成</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    /* タブ切り替えスタイル */
-    .tab-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .tab-button {
-      padding: 10px 20px;
-      cursor: pointer;
-      border: none;
-      background: #9ac387;
-      color: white;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-    .tab-button.active {
-      background: #00776e;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-  </style>
 </head>
 <body>
   <nav>
-    <a href="home.html">🏠 ダッシュボード</a>
+    <a href="index.html">🏠 ダッシュボード</a>
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
     <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
-    <button onclick="logout()">🚪 ログアウト</button>
   </nav>
 
   <div class="container">
     <h1>➕ Mislenge / Project 作成</h1>
-
-    <!-- タブ切り替えボタン -->
     <div class="tab-container">
       <button class="tab-button active" onclick="switchTab('mislenge')">Mislenge 作成</button>
       <button class="tab-button" onclick="switchTab('project')">Project 作成</button>
     </div>
-
-    <!-- Mislenge 作成フォーム -->
+    
     <div id="mislenge-form" class="tab-content active">
       <h2>Mislenge 作成</h2>
       <form id="mislengeForm">
-        <div>
-          <label for="name">Mislenge 名</label>
-          <input type="text" id="name" required />
-        </div>
-        <div>
-          <label for="type">種別</label>
-          <select id="type">
-            <option value="Task">Task</option>
-            <option value="Schedule">Schedule</option>
-          </select>
-        </div>
+        <input type="text" id="name" placeholder="Mislenge 名" required>
+        <select id="type">
+          <option value="Task">Task</option>
+          <option value="Schedule">Schedule</option>
+        </select>
         <div id="taskFields">
-          <div>
-            <label for="deadline">締め切り日</label>
-            <input type="date" id="deadline" />
-          </div>
-          <div>
-            <label for="scheduledDate">予定日</label>
-            <input type="date" id="scheduledDate" />
-          </div>
-          <div>
-            <label for="priority">優先度</label>
-            <select id="priority">
-              <option value="絶対">絶対</option>
-              <option value="できたら">できたら</option>
-              <option value="やったらおもろそう">やったらおもろそう</option>
-            </select>
-          </div>
-          <div>
-            <label for="relatedUrl">関連URL</label>
-            <input type="text" id="relatedUrl" />
-          </div>
+          <input type="date" id="deadline" placeholder="締め切り日">
+          <input type="text" id="priority" placeholder="優先度">
+          <input type="text" id="relatedUrl" placeholder="関連URL">
         </div>
         <div id="scheduleFields" style="display: none;">
-          <div>
-            <label for="scheduleDate">予定日時</label>
-            <input type="datetime-local" id="scheduleDate" />
-          </div>
-          <div>
-            <label for="location">場所</label>
-            <input type="text" id="location" />
-          </div>
+          <input type="datetime-local" id="scheduleDate" placeholder="予定日時">
+          <input type="text" id="location" placeholder="場所">
         </div>
-        <div>
-          <label for="projectId">関連プロジェクト</label>
-          <select id="projectId">
-            <option value="">（なし）</option>
-          </select>
-        </div>
+        <select id="projectId">
+          <option value="">（なし）</option>
+        </select>
         <button type="submit">作成</button>
       </form>
     </div>
-
-    <!-- Project 作成フォーム -->
+    
     <div id="project-form" class="tab-content">
       <h2>Project 作成</h2>
       <form id="projectForm">
-        <div>
-          <label for="projectName">プロジェクト名</label>
-          <input type="text" id="projectName" required />
-        </div>
-        <div>
-          <label for="projectStart">開始日</label>
-          <input type="date" id="projectStart" required />
-        </div>
-        <div>
-          <label for="projectEnd">終了日</label>
-          <input type="date" id="projectEnd" required />
-        </div>
+        <input type="text" id="projectName" placeholder="プロジェクト名" required>
+        <input type="date" id="projectStart" placeholder="開始日" required>
+        <input type="date" id="projectEnd" placeholder="終了日" required>
         <button type="submit">作成</button>
       </form>
     </div>
   </div>
 
-  <script src="common.js"></script>
-  <script>
+  <script type="module">
+    import { getDataFromURL, addData } from "./common.js";
+
     function switchTab(tab) {
       document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".tab-button").forEach(el => el.classList.remove("active"));
-
       document.getElementById(`${tab}-form`).classList.add("active");
       document.querySelector(`button[onclick="switchTab('${tab}')"]`).classList.add("active");
     }
@@ -143,65 +71,49 @@
       document.getElementById("scheduleFields").style.display = isTask ? "none" : "block";
     });
 
-    (function() {
-      // プロジェクトリストを取得してセレクトボックスに追加
+    document.addEventListener("DOMContentLoaded", function() {
       const projectSelect = document.getElementById("projectId");
-      loadProjectsFromFirestore();
-      setTimeout(() => {
-        getProjects().forEach(p => {
-          const opt = document.createElement("option");
-          opt.value = p.id;
-          opt.textContent = p.name;
-          projectSelect.appendChild(opt);
-        });
-      }, 1000);
-
-      // Mislenge 作成処理
-      document.getElementById("mislengeForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const type = document.getElementById("type").value;
-        const name = document.getElementById("name").value.trim();
-        const projectId = document.getElementById("projectId").value;
-        let newMislenge = { name, type, projectId };
-
-        if (type === "Task") {
-          newMislenge = {
-            ...newMislenge,
-            deadline: document.getElementById("deadline").value,
-            scheduledDate: document.getElementById("scheduledDate").value,
-            priority: document.getElementById("priority").value,
-            relatedUrl: document.getElementById("relatedUrl").value,
-            phase1: false,
-            phase2: false,
-            phase3: false
-          };
-        } else {
-          newMislenge = {
-            ...newMislenge,
-            scheduleDate: document.getElementById("scheduleDate").value,
-            location: document.getElementById("location").value
-          };
-        }
-
-        addMislenge(newMislenge);
-        alert("Mislengeを作成しました");
-        window.location.href = "task-list.html";
+      const projects = getDataFromURL().filter(item => item.type === "Project");
+      projects.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.name;
+        projectSelect.appendChild(opt);
       });
+    });
 
-      // プロジェクト作成処理
-      document.getElementById("projectForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const project = {
-          name: document.getElementById("projectName").value.trim(),
-          startDate: document.getElementById("projectStart").value,
-          endDate: document.getElementById("projectEnd").value
-        };
-
-        addProject(project);
-        alert("プロジェクトを作成しました");
-        window.location.href = "project-list.html";
-      });
-    })();
+    document.getElementById("mislengeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const type = document.getElementById("type").value;
+      const name = document.getElementById("name").value.trim();
+      const projectId = document.getElementById("projectId").value;
+      let newMislenge = {
+        id: Date.now().toString(),
+        name, type, projectId,
+        deadline: document.getElementById("deadline").value,
+        priority: document.getElementById("priority").value,
+        relatedUrl: document.getElementById("relatedUrl").value,
+        scheduleDate: document.getElementById("scheduleDate").value,
+        location: document.getElementById("location").value
+      };
+      addData(newMislenge);
+      alert("Mislengeを作成しました");
+      window.location.href = "task-list.html";
+    });
+    
+    document.getElementById("projectForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const project = {
+        id: Date.now().toString(),
+        type: "Project",
+        name: document.getElementById("projectName").value.trim(),
+        startDate: document.getElementById("projectStart").value,
+        endDate: document.getElementById("projectEnd").value
+      };
+      addData(project);
+      alert("プロジェクトを作成しました");
+      window.location.href = "project-list.html";
+    });
   </script>
 </body>
 </html>

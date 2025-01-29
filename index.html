@@ -2,42 +2,50 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ログイン</title>
+  <title>ダッシュボード</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🔑 ログイン</h1>
-    <button onclick="loginWithGoogle()">Google でログイン</button>
-    
-    <h2>または</h2>
-    <input type="email" id="email" placeholder="メールアドレス" required>
-    <input type="password" id="password" placeholder="パスワード" required>
-    <button id="loginBtn">ログイン</button>
-    <button id="registerBtn">新規登録</button>
-  </div>
-  <script type="module" src="common.js"></script>
+  <nav>
+    <a href="index.html">🏠 ダッシュボード</a>
+    <a href="project-list.html">📂 プロジェクト一覧</a>
+    <a href="task-list.html">✅ タスク一覧</a>
+    <a href="mislenge-create.html">➕ Mislenge作成</a>
+  </nav>
 
+  <div class="container">
+    <h1>📅 本日の予定</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>種別</th><th>名称</th><th>関連プロジェクト</th><th>予定日</th><th>フェーズ</th>
+        </tr>
+      </thead>
+      <tbody id="todayTable"></tbody>
+    </table>
+  </div>
+
+  <script src="common.js"></script>
   <script type="module">
-    import { loginWithEmail, registerWithEmail } from "./common.js";
+    import { getDataFromURL } from "./common.js";
   
     document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("loginBtn").addEventListener("click", function() {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        loginWithEmail(email, password);
-      });
+      const data = getDataFromURL();
+      const tbody = document.getElementById("todayTable");
   
-      document.getElementById("registerBtn").addEventListener("click", function() {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        registerWithEmail(email, password);
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.type}</td>
+          <td>${item.name}</td>
+          <td>${item.project || "なし"}</td>
+          <td>${item.date || "未設定"}</td>
+          <td>${item.phase ? "✅" : "❌"}</td>
+        `;
+        tbody.appendChild(tr);
       });
     });
   </script>
-  
-
-
   
 </body>
 </html>
