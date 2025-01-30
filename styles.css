@@ -70,13 +70,6 @@ body {
     color: white;
   }
   
-  @media (max-width: 600px) {
-    table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-  }
   
   /* 🔘 ボタン */
   button {
@@ -113,6 +106,15 @@ body {
     margin-top: 10px;
     font-weight: bold;
   }
+
+  /* 📌 プロジェクト一覧のグリッドレイアウト */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 自動調整 */
+    gap: 20px;
+    padding: 10px;
+    justify-content: center;
+  }
   
   /* 📌 カード型プロジェクト一覧 */
   .project-card {
@@ -121,20 +123,59 @@ body {
     padding: 15px;
     margin: 10px;
     border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 16px;
+    border-radius: 8px;
     text-align: center;
-  }
-  
-  .project-card:hover {
-    background: #e66b00;
-  }
-  
-  @media (max-width: 600px) {
-    .project-card {
-      font-size: 14px;
+    transition: 0.3s;
+    font-size: 18px; /* 文字を見やすく */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .project-card h3 {
+      font-size: 20px; /* タイトルを大きく */
+      margin-bottom: 10px;
+    }
+    
+    .project-card p {
+      font-size: 16px; /* 説明部分を適切なサイズに */
+      margin-bottom: 5px;
+    }
+    
+    /* 📌 ボタンのデザイン調整 */
+    .project-card button {
+      width: 80%;
+      max-width: 180px;
       padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    
+    .project-card a {
+      color: #ffd700;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  
+    .project-card a:hover {
+      text-decoration: underline;
+    }
+  
+  @media (max-width: 900px) {
+    .project-grid {
+      grid-template-columns: repeat(2, minmax(280px, 1fr)); /* 画面幅900px以下で2列 */
+    }
+  }   
+  @media (max-width: 600px) {
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .project-grid {
+      grid-template-columns: repeat(1, minmax(280px, 1fr)); /* 画面幅600px以下で1列 */
+    }
+  
+    .project-card {
+      font-size: 16px;
     }
   }
   
