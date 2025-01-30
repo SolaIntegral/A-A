@@ -25,43 +25,45 @@
     </table>
   </div>
 
-  <script type="module">
-    import { getDataFromURL, deleteData } from "./common.js";
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const tasks = getDataFromURL()
+  <script src="common.js"></script>
+  <script>
+    (function() {
+      const tasks = getMislenge()
         .filter(m => m.type === "Task")
         .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
+      const projects = getProjects();
       const tbody = document.getElementById("taskTable");
-      
+
       tasks.forEach(task => {
+        const project = projects.find(p => p.id === task.projectId);
         let phaseHTML = `${task.phase1 ? '✅' : '❌'} ${task.phase2 ? '✅' : '❌'} ${task.phase3 ? '✅' : '❌'}`;
+
         let priorityClass = task.priority === "絶対" ? "priority-high" : task.priority === "できたら" ? "priority-mid" : "priority-low";
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${task.name}</td>
-          <td>${task.project || "（なし）"}</td>
-          <td>${task.deadline || "未設定"}</td>
-          <td>${task.scheduledDate || "未設定"}</td>
+          <td>${project ? project.name : "（なし）"}</td>
+          <td>${task.deadline}</td>
+          <td>${task.scheduledDate}</td>
           <td>${phaseHTML}</td>
-          <td class="${priorityClass}">${task.priority || "未設定"}</td>
+          <td class="${priorityClass}">${task.priority}</td>
           <td>
             <button onclick="handleDelete('${task.id}')">削除</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
-    });
 
-    window.handleDelete = function(taskId) {
-      if (confirm("このタスクを削除しますか？")) {
-        deleteData(taskId);
-        alert("削除しました");
-        window.location.reload();
-      }
-    };
+      window.handleDelete = function(mislengeId) {
+        if (confirm("このタスクを削除しますか？")) {
+          deleteMislenge(mislengeId);
+          alert("削除しました");
+          window.location.reload();
+        }
+      };
+    })();
   </script>
 </body>
 </html>

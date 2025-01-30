@@ -1,29 +1,69 @@
-// ===========================
-// URL パラメータを利用したデータ管理
-// ===========================
+const STORAGE_KEY_PROJECTS = "projectList";
+const STORAGE_KEY_MISLENGE = "mislengeList";
 
-// URL からデータを取得
-export function getDataFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return JSON.parse(decodeURIComponent(params.get("data") || "[]"));
+/** 日付を"YYYY-MM-DD"形式の文字列で返す */
+function formatDate(dateObj) {
+  const y = dateObj.getFullYear();
+  const m = ("00" + (dateObj.getMonth() + 1)).slice(-2);
+  const d = ("00" + dateObj.getDate()).slice(-2);
+  return `${y}-${m}-${d}`;
 }
 
-// URL にデータを保存
-export function saveDataToURL(data) {
-  const encodedData = encodeURIComponent(JSON.stringify(data));
-  const newUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
-  window.history.replaceState({}, "", newUrl);
+/** 今日の日付を取得 */
+function getTodayString() {
+  return formatDate(new Date());
 }
 
-// データ追加（タスク・プロジェクト）
-export function addData(item) {
-  const data = getDataFromURL();
-  data.push(item);
-  saveDataToURL(data);
+/** データの取得・保存（localStorage） */
+function getProjects() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_PROJECTS)) || [];
+}
+function saveProjects(projects) {
+  localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(projects));
 }
 
-// データ削除
-export function deleteData(id) {
-  const data = getDataFromURL().filter(item => item.id !== id);
-  saveDataToURL(data);
+function getMislenge() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_MISLENGE)) || [];
 }
+function saveMislenge(mislenge) {
+  localStorage.setItem(STORAGE_KEY_MISLENGE, JSON.stringify(mislenge));
+}
+
+/** 新規データ追加 */
+function addProject(project) {
+  project.id = Date.now().toString();
+  const projects = getProjects();
+  projects.push(project);
+  saveProjects(projects);
+}
+
+function addMislenge(mislenge) {
+  mislenge.id = Date.now().toString();
+  const mislengeList = getMislenge();
+  mislengeList.push(mislenge);
+  saveMislenge(mislengeList);
+}
+
+/** Project ID に紐づくMislengeを取得 */
+function getMislengeByProjectId(projectId) {
+  return getMislenge().filter(m => m.projectId === projectId);
+}
+
+/* 削除機能 */
+function deleteProject(projectId) {
+    // プロジェクト削除
+    let projects = getProjects();
+    projects = projects.filter(p => p.id !== projectId);
+    saveProjects(projects);
+  
+    // 関連する Mislenge も削除
+    let mislenge = getMislenge();
+    mislenge = mislenge.filter(m => m.projectId !== projectId);
+    saveMislenge(mislenge);
+  }
+  
+  function deleteMislenge(mislengeId) {
+    let mislenge = getMislenge();
+    mislenge = mislenge.filter(m => m.id !== mislengeId);
+    saveMislenge(mislenge);
+  }

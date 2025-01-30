@@ -25,17 +25,16 @@
     <button onclick="closePopup()">閉じる</button>
   </div>
 
-  <script type="module">
-    import { getDataFromURL, deleteData } from "./common.js";
-
+  <script src="common.js"></script>
+  <script>
     function showPopup(projectId) {
-      const projects = getDataFromURL().filter(item => item.type === "Project");
-      const mislenge = getDataFromURL().filter(item => item.projectId === projectId);
-      const project = projects.find(p => p.id === projectId);
+      const project = getProjects().find(p => p.id === projectId);
+      const mislenge = getMislengeByProjectId(projectId);
       
-      document.getElementById("popupTitle").textContent = project ? project.name : "不明なプロジェクト";
+      document.getElementById("popupTitle").textContent = project.name;
       const popupList = document.getElementById("popupList");
       popupList.innerHTML = mislenge.map(m => `<li>${m.name}</li>`).join("");
+
       document.getElementById("popup").classList.add("active");
     }
 
@@ -43,8 +42,8 @@
       document.getElementById("popup").classList.remove("active");
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      const projects = getDataFromURL().filter(item => item.type === "Project");
+    (function() {
+      const projects = getProjects();
       const projectList = document.getElementById("projectList");
 
       projects.forEach(project => {
@@ -59,15 +58,15 @@
         `;
         projectList.appendChild(div);
       });
-    });
 
-    window.handleDelete = function(projectId) {
-      if (confirm("このプロジェクトを削除しますか？関連するタスクも削除されます。")) {
-        deleteData(projectId);
-        alert("削除しました");
-        window.location.reload();
-      }
-    };
+      window.handleDelete = function(projectId) {
+        if (confirm("このプロジェクトを削除しますか？関連するタスクも削除されます。")) {
+          deleteProject(projectId);
+          alert("削除しました");
+          window.location.reload();
+        }
+      };
+    })();
   </script>
 </body>
 </html>

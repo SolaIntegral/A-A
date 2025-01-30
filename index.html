@@ -26,26 +26,28 @@
   </div>
 
   <script src="common.js"></script>
-  <script type="module">
-    import { getDataFromURL } from "./common.js";
-  
-    document.addEventListener("DOMContentLoaded", function() {
-      const data = getDataFromURL();
+  <script>
+    (function() {
+      const today = getTodayString();
+      const mislengeList = getMislenge();
       const tbody = document.getElementById("todayTable");
-  
-      data.forEach(item => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${item.type}</td>
-          <td>${item.name}</td>
-          <td>${item.project || "なし"}</td>
-          <td>${item.date || "未設定"}</td>
-          <td>${item.phase ? "✅" : "❌"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    });
+
+      mislengeList
+        .filter(m => m.scheduledDate === today || m.type === "Schedule" && m.scheduleDate === today)
+        .forEach(m => {
+          let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${m.type}</td>
+            <td>${m.name}</td>
+            <td>${m.projectName || "なし"}</td>
+            <td>${m.scheduledDate || m.scheduleDate}</td>
+            <td>${phaseHTML}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+    })();
   </script>
-  
 </body>
 </html>
