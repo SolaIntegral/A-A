@@ -121,6 +121,10 @@
           <label for="projectEnd">終了日</label>
           <input type="date" id="projectEnd" required />
         </div>
+        <div>
+          <label for="projectUrl">参考URL</label>
+          <input type="url" id="projectUrl">
+        </div>
         <button type="submit">作成</button>
       </form>
     </div>
@@ -187,7 +191,8 @@
         const project = {
           name: document.getElementById("projectName").value.trim(),
           startDate: document.getElementById("projectStart").value,
-          endDate: document.getElementById("projectEnd").value
+          endDate: document.getElementById("projectEnd").value,
+          url: document.getElementById("projectUrl").value
         };
 
         addProject(project);

@@ -21,6 +21,7 @@
           <th>Task名</th><th>関連プロジェクト</th><th>締め切り日</th><th>予定日</th><th>フェーズ</th><th>優先度</th><th>操作</th>
         </tr>
       </thead>
+      
       <tbody id="taskTable"></tbody>
     </table>
   </div>
@@ -50,6 +51,7 @@
           <td>${phaseHTML}</td>
           <td class="${priorityClass}">${task.priority}</td>
           <td>
+            <button onclick="showTaskEditPopup('${task.id}')">編集</button>
             <button onclick="handleDelete('${task.id}')">削除</button>
           </td>
         `;

@@ -25,6 +25,15 @@
     <button onclick="closePopup()">閉じる</button>
   </div>
 
+  <div id="editPopup" class="popup">
+    <h2>プロジェクト編集</h2>
+    <input type="text" id="editProjectName">
+    <input type="url" id="editProjectUrl" placeholder="参考URL">
+    <button onclick="saveProjectEdit()">保存</button>
+    <button onclick="closeEditPopup()">キャンセル</button>
+  </div>
+  
+
   <script src="common.js"></script>
   <script>
     function showPopup(projectId) {
@@ -53,8 +62,12 @@
           <h3>${project.name}</h3>
           <p>開始日: ${project.startDate || "未設定"}</p>
           <p>終了日: ${project.endDate || "未設定"}</p>
+          <p>参考URL: <a href="${project.url}" target="_blank">${project.url || "なし"}</a></p>
           <button class="view-btn" onclick="showPopup('${project.id}')">詳細</button>
+          <button class="edit-btn" onclick="showEditPopup('${project.id}')">編集</button>
           <button class="delete-btn" onclick="handleDelete('${project.id}')">削除</button>
+          <button onclick="moveUp('${project.id}')">⬆️</button>
+          <button onclick="moveDown('${project.id}')">⬇️</button>
         `;
         projectList.appendChild(div);
       });
@@ -67,6 +80,49 @@
         }
       };
     })();
+    
+    //編集機能
+    function showEditPopup(projectId) {
+  const project = getProjects().find(p => p.id === projectId);
+  document.getElementById("editProjectName").value = project.name;
+  document.getElementById("editProjectUrl").value = project.url || "";
+  document.getElementById("editPopup").dataset.projectId = projectId;
+  document.getElementById("editPopup").classList.add("active");
+}
+
+function saveProjectEdit() {
+  const projectId = document.getElementById("editPopup").dataset.projectId;
+  const name = document.getElementById("editProjectName").value;
+  const url = document.getElementById("editProjectUrl").value;
+  
+  updateProject({ id: projectId, name, url });
+  alert("プロジェクトを更新しました");
+  window.location.reload();
+}
+
+function closeEditPopup() {
+  document.getElementById("editPopup").classList.remove("active");
+}
+
+//並び替え機能
+function moveUp(projectId) {
+  let projects = getProjects();
+  let index = projects.findIndex(p => p.id === projectId);
+  if (index > 0) {
+    moveProject(index, index - 1);
+    window.location.reload();
+  }
+}
+
+function moveDown(projectId) {
+  let projects = getProjects();
+  let index = projects.findIndex(p => p.id === projectId);
+  if (index < projects.length - 1) {
+    moveProject(index, index + 1);
+    window.location.reload();
+  }
+}
+
   </script>
 </body>
 </html>

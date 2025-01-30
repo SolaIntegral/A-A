@@ -32,6 +32,7 @@ function saveMislenge(mislenge) {
 /** 新規データ追加 */
 function addProject(project) {
   project.id = Date.now().toString();
+  project.url = project.url || "";
   const projects = getProjects();
   projects.push(project);
   saveProjects(projects);
@@ -67,3 +68,29 @@ function deleteProject(projectId) {
     mislenge = mislenge.filter(m => m.id !== mislengeId);
     saveMislenge(mislenge);
   }
+
+//編集機能
+function updateProject(updatedProject) {
+  let projects = getProjects();
+  let index = projects.findIndex(p => p.id === updatedProject.id);
+  if (index !== -1) {
+    projects[index] = updatedProject;
+    saveProjects(projects);
+  }
+}
+
+function updateMislenge(updatedMislenge) {
+  let mislenge = getMislenge();
+  let index = mislenge.findIndex(m => m.id === updatedMislenge.id);
+  if (index !== -1) {
+    mislenge[index] = updatedMislenge;
+    saveMislenge(mislenge);
+  }
+}
+
+function moveProject(fromIndex, toIndex) {
+  let projects = getProjects();
+  const [movedProject] = projects.splice(fromIndex, 1);
+  projects.splice(toIndex, 0, movedProject);
+  saveProjects(projects);
+}
