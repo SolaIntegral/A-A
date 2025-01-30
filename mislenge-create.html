@@ -49,61 +49,54 @@
     </div>
 
     <!-- Mislenge 作成フォーム -->
-    <div id="mislenge-form" class="tab-content active">
-      <h2>Mislenge 作成</h2>
-      <form id="mislengeForm">
-        <div>
+    <form id="mislengeForm">
+      <div>
           <label for="name">Mislenge 名</label>
           <input type="text" id="name" required />
-        </div>
-        <div>
+      </div>
+      <div>
           <label for="type">種別</label>
           <select id="type">
-            <option value="Task">Task</option>
-            <option value="Schedule">Schedule</option>
+              <option value="Task">Task</option>
+              <option value="Schedule">Schedule</option>
           </select>
-        </div>
-        <div id="taskFields">
+      </div>
+      <div id="taskFields">
           <div>
-            <label for="deadline">締め切り日</label>
-            <input type="date" id="deadline" />
+              <label for="deadline">締め切り日</label>
+              <input type="date" id="deadline" />
           </div>
           <div>
-            <label for="scheduledDate">予定日</label>
-            <input type="date" id="scheduledDate" />
+              <label for="scheduledDate">予定日</label>
+              <input type="date" id="scheduledDate" />
           </div>
           <div>
-            <label for="priority">優先度</label>
-            <select id="priority">
-              <option value="絶対">絶対</option>
-              <option value="できたら">できたら</option>
-              <option value="やったらおもろそう">やったらおもろそう</option>
-            </select>
+              <label for="priority">優先度</label>
+              <select id="priority">
+                  <option value="絶対">絶対</option>
+                  <option value="できたら">できたら</option>
+                  <option value="やったらおもろそう">やったらおもろそう</option>
+              </select>
+          </div>
+      </div>
+      <div id="scheduleFields" style="display: none;">
+          <div>
+              <label for="scheduleDate">予定日</label>
+              <input type="date" id="scheduleDate" />
           </div>
           <div>
-            <label for="relatedUrl">関連URL</label>
-            <input type="text" id="relatedUrl" />
+              <label for="location">場所</label>
+              <input type="text" id="location" />
           </div>
-        </div>
-        <div id="scheduleFields" style="display: none;">
-          <div>
-            <label for="scheduleDate">予定日時</label>
-            <input type="datetime-local" id="scheduleDate" />
-          </div>
-          <div>
-            <label for="location">場所</label>
-            <input type="text" id="location" />
-          </div>
-        </div>
-        <div>
+      </div>
+      <div>
           <label for="projectId">関連プロジェクト</label>
           <select id="projectId">
-            <option value="">（なし）</option>
+              <option value="">（なし）</option>
           </select>
-        </div>
-        <button type="submit">作成</button>
-      </form>
-    </div>
+      </div>
+      <button type="submit">作成</button>
+  </form>
 
     <!-- Project 作成フォーム -->
     <div id="project-form" class="tab-content">
@@ -141,50 +134,44 @@
     }
 
     document.getElementById("type").addEventListener("change", function() {
-      const isTask = this.value === "Task";
-      document.getElementById("taskFields").style.display = isTask ? "block" : "none";
-      document.getElementById("scheduleFields").style.display = isTask ? "none" : "block";
+        const isTask = this.value === "Task";
+        document.getElementById("taskFields").style.display = isTask ? "block" : "none";
+        document.getElementById("scheduleFields").style.display = isTask ? "none" : "block";
     });
 
     (function() {
-      const projectSelect = document.getElementById("projectId");
-      getProjects().forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = p.name;
-        projectSelect.appendChild(opt);
-      });
+    const projectSelect = document.getElementById("projectId");
+    getProjects().forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      projectSelect.appendChild(opt);
+    });
 
-      document.getElementById("mislengeForm").addEventListener("submit", function(e) {
+    document.getElementById("mislengeForm").addEventListener("submit", function(e) {
         e.preventDefault();
         const type = document.getElementById("type").value;
         const name = document.getElementById("name").value.trim();
-        const projectId = document.getElementById("projectId").value;
+        const projectId = document.getElementById("projectId").value || null;
+
         let newMislenge = { name, type, projectId };
 
         if (type === "Task") {
-          newMislenge = {
-            ...newMislenge,
-            deadline: document.getElementById("deadline").value,
-            scheduledDate: document.getElementById("scheduledDate").value,
-            priority: document.getElementById("priority").value,
-            relatedUrl: document.getElementById("relatedUrl").value,
-            phase1: false,
-            phase2: false,
-            phase3: false
-          };
-        } else {
-          newMislenge = {
-            ...newMislenge,
-            scheduleDate: document.getElementById("scheduleDate").value,
-            location: document.getElementById("location").value
-          };
+            newMislenge.deadline = document.getElementById("deadline").value || "";
+            newMislenge.scheduledDate = document.getElementById("scheduledDate").value || "";
+            newMislenge.priority = document.getElementById("priority").value || "未設定";
+            newMislenge.phase1 = false;
+            newMislenge.phase2 = false;
+            newMislenge.phase3 = false;
+        } else if (type === "Schedule") {
+            newMislenge.scheduleDate = document.getElementById("scheduleDate").value || "";
+            newMislenge.location = document.getElementById("location").value || "";
         }
 
         addMislenge(newMislenge);
         alert("Mislengeを作成しました");
         window.location.href = "task-list.html";
-      });
+    });
 
       document.getElementById("projectForm").addEventListener("submit", function(e) {
         e.preventDefault();

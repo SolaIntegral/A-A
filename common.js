@@ -45,9 +45,9 @@ function addMislenge(mislenge) {
   saveMislenge(mislengeList);
 }
 
-/** Project ID に紐づくMislengeを取得 */
+/** Project ID に紐づくMislengeを取得（型を統一して比較） */
 function getMislengeByProjectId(projectId) {
-  return getMislenge().filter(m => m.projectId === projectId);
+  return getMislenge().filter(m => String(m.projectId) === String(projectId));
 }
 
 /* 削除機能 */
@@ -79,17 +79,23 @@ function updateProject(updatedProject) {
   }
 }
 
+/** Mislengeの更新（Object.assignを使用） */
 function updateMislenge(updatedMislenge) {
   let mislenge = getMislenge();
   let index = mislenge.findIndex(m => m.id === updatedMislenge.id);
   if (index !== -1) {
-    mislenge[index] = updatedMislenge;
+    Object.assign(mislenge[index], updatedMislenge);
     saveMislenge(mislenge);
   }
 }
 
+/** プロジェクトを指定位置へ移動（範囲外チェックを追加） */
 function moveProject(fromIndex, toIndex) {
   let projects = getProjects();
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= projects.length || toIndex >= projects.length) {
+    console.warn("無効な移動");
+    return;
+  }
   const [movedProject] = projects.splice(fromIndex, 1);
   projects.splice(toIndex, 0, movedProject);
   saveProjects(projects);

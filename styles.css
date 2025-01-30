@@ -158,7 +158,91 @@ body {
     .project-card a:hover {
       text-decoration: underline;
     }
-  
+
+   /* Task の背景色 */
+    .task-row {
+      background-color: #f0f8ff; /* 薄い青 */
+    }
+
+    /* Schedule の背景色 */
+    .schedule-row {
+      background-color: #fff3e0; /* 薄いオレンジ */
+    }
+
+      
+      /* 日付ごとのセクションのスタイル */
+    .task-group {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 📌 日付の見出し */
+    .task-date {
+      font-size: 20px;
+      font-weight: bold;
+      color: #00776e;
+      border-bottom: 2px solid #00776e;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    /* 📌 タスクテーブル */
+    .task-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .task-table th, .task-table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+
+    /* 📌 フェーズのアイコン */
+    .phase-icon {
+      cursor: pointer;
+      font-size: 24px;
+      margin: 0 10px;
+    }
+    .phase-icon:hover {
+      opacity: 0.7;
+    }
+
+    /* 📌 タスク編集ポップアップ */
+    #taskEditPopup {
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #taskEditPopup h2 {
+      font-size: 22px;
+    }
+
+    #taskEditPopup input, #taskEditPopup select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    #taskEditPopup button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+
+
   @media (max-width: 900px) {
     .project-grid {
       grid-template-columns: repeat(2, minmax(280px, 1fr)); /* 画面幅900px以下で2列 */

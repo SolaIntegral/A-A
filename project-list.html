@@ -39,6 +39,10 @@
   <script>
     function showPopup(projectId) {
       const project = getProjects().find(p => p.id === projectId);
+      if (!project) {
+      alert("プロジェクトが見つかりません");
+      return;
+    }
       const mislenge = getMislengeByProjectId(projectId);
       
       document.getElementById("popupTitle").textContent = project.name;
