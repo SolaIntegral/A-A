@@ -40,6 +40,7 @@ body {
     background: #33A1DD;
   }
   
+  
   /* 🔹 ページ全体 */
   .container {
     width: 90%;
@@ -49,6 +50,7 @@ body {
     margin: 20px auto;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color:#33A1DD;
   }
   
   /* 🔸 テーブル */
