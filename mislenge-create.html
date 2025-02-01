@@ -36,11 +36,11 @@
     <a href="index.html">🏠 ダッシュボード</a>
     <a href="project-list.html">📂 プロジェクト一覧</a>
     <a href="task-list.html">✅ タスク一覧</a>
-    <a href="mislenge-create.html">➕ Mislenge / Project 作成</a>
+    <a href="mislenge-create.html">➕ Mission / Project 作成</a>
   </nav>
 
   <div class="container">
-    <h1>➕ Mislenge / Project 作成</h1>
+    <h1>➕ Mission / Project 作成</h1>
 
     <!-- タブ切り替えボタン -->
     <div class="tab-container">
@@ -51,7 +51,7 @@
     <!-- Mislenge 作成フォーム -->
     <form id="mislengeForm">
       <div>
-          <label for="name">Mislenge 名</label>
+          <label for="name">Mission 名</label>
           <input type="text" id="name" required />
       </div>
       <div>
@@ -154,7 +154,12 @@
         const name = document.getElementById("name").value.trim();
         const projectId = document.getElementById("projectId").value || null;
 
-        let newMislenge = { name, type, projectId };
+        let newMislenge = { 
+          id: Date.now().toString(), 
+          name, 
+          type, 
+          projectId 
+        };
 
         if (type === "Task") {
             newMislenge.deadline = document.getElementById("deadline").value || "";
@@ -170,7 +175,7 @@
 
         addMislenge(newMislenge);
         alert("Mislengeを作成しました");
-        window.location.href = "task-list.html";
+        window.location.href = `task-list.html#task-${newMislenge.id}`;
     });
 
       document.getElementById("projectForm").addEventListener("submit", function(e) {

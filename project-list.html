@@ -47,10 +47,40 @@
       
       document.getElementById("popupTitle").textContent = project.name;
       const popupList = document.getElementById("popupList");
-      popupList.innerHTML = mislenge.map(m => `<li>${m.name}</li>`).join("");
+      
+      // ✅ タスク名、予定日、2つのボタンを表示
+      popupList.innerHTML = mislenge.map(m => `
+      <li>
+            <strong>${m.name}</strong> 
+            <input type="date" id="scheduledDate-${m.id}" value="${m.scheduledDate || ''}" />
+
+            <button onclick="saveScheduledDate('${m.id}')">保存</button>
+            <button onclick="goToTask('${m.id}')">遷移</button>
+        </li>
+      `).join("");
 
       document.getElementById("popup").classList.add("active");
     }
+
+    // ✅ 1. 予定日を保存する関数
+function saveScheduledDate(taskId) {
+    const newDate = document.getElementById(`scheduledDate-${taskId}`).value;
+    const tasks = getMislenge();
+    const task = tasks.find(t => t.id === taskId);
+
+    if (task) {
+        task.scheduledDate = newDate;
+        updateMislenge(task);
+        alert("予定日を保存しました");
+    }
+}
+
+// ✅ 2. タスク一覧へ遷移する関数
+function goToTask(taskId) {
+    // タスク一覧ページに遷移し、該当タスクへスクロール
+    window.location.href = `task-list.html#task-${taskId}`;
+}
+
 
     function closePopup() {
       document.getElementById("popup").classList.remove("active");
@@ -65,15 +95,17 @@
         div.className = "project-card";
         div.innerHTML = `
           <h3>${project.name}</h3>
-          <p>開始日: ${project.startDate || "未設定"}</p>
-          <p>終了日: ${project.endDate || "未設定"}</p>
           <p>参考URL: <a href="${project.url}" target="_blank">${project.url || "なし"}</a></p>
+          
+           <!-- ✅ ボタンを横並びに配置 -->
+          <div class="button-group">
           <button class="view-btn" onclick="showPopup('${project.id}')">詳細</button>
           <button class="edit-btn" onclick="showEditPopup('${project.id}')">編集</button>
           <button class="delete-btn" onclick="handleDelete('${project.id}')">削除</button>
           <button onclick="moveUp('${project.id}')">⬆️</button>
           <button onclick="moveDown('${project.id}')">⬇️</button>
-        `;
+          </div>
+          `;
         projectList.appendChild(div);
       });
 

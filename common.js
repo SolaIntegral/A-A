@@ -39,7 +39,7 @@ function addProject(project) {
 }
 
 function addMislenge(mislenge) {
-  mislenge.id = Date.now().toString();
+  mislenge.id = mislenge.id || Date.now().toString();  // ✅ すでにIDがあればそれを使う
   const mislengeList = getMislenge();
   mislengeList.push(mislenge);
   saveMislenge(mislengeList);

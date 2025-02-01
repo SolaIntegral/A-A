@@ -121,16 +121,19 @@ body {
   
   /* 📌 カード型プロジェクト一覧 */
   .project-card {
+    width: 95%;
     background: #33A1DD;
     color: #1E1E4B;
-    padding: 15px;
+    padding: 10px;
     margin: 10px;
-    border-radius: 8px;
+    border: 1px solid #ddd;
     border-radius: 8px;
     text-align: center;
-    transition: 0.3s;
     font-size: 18px; /* 文字を見やすく */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-block; /* カードを横並びにする */
+    vertical-align: top;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
     }
 
     .project-card h3 {
@@ -145,15 +148,28 @@ body {
     
     /* 📌 ボタンのデザイン調整 */
     .project-card button {
-      width: 80%;
+      width: 15%;
       max-width: 180px;
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin: 2px;
+      display: inline-block;  /* 横並びにする */
+      vertical-align: middle;
+      background-color:#ECECEF;
+    }
+
+
+
+    /* ✅ ボタンのラップを防ぐ */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;  /* ボタンが多い場合は折り返す */
+      gap: 4px;         /* ボタン間の隙間 */
+      justify-content: center;
+
     }
     
     .project-card a {
-      color: #ffd700;
       text-decoration: none;
       font-size: 14px;
     }
@@ -164,19 +180,28 @@ body {
 
    /* Task の背景色 */
     .task-row {
-      background-color:#ECECEF; /* 薄い青 */
+      padding: 4px 8px;       /* セル内の余白を削減 */
+      font-size: 13px;        /* テキストのサイズを縮小 */
+      line-height: 1.2;       /* 行間を縮める */
+      background-color:#ECECEF;
+      color: #33A1DD; /* 薄い青 */
     }
 
     /* Schedule の背景色 */
     .schedule-row {
-      background-color: #1565C0; /* 薄いオレンジ */
+      padding: 4px 8px;       /* セル内の余白を削減 */
+      font-size: 13px;        /* テキストのサイズを縮小 */
+      line-height: 1.2;       /* 行間を縮める */
+      background-color: #ECECEF;
+      color:#1E1E4B; /* 薄いオレンジ */
     }
 
       
       /* 日付ごとのセクションのスタイル */
     .task-group {
-      margin-bottom: 20px;
-      padding: 15px;
+      margin-bottom: 10px;    /* 各日付グループ間の余白を最小限に */
+      padding: 5px;           /* 内側の余白も縮小 */
+      border: 1px solid #ddd; /* グループ間を視覚的に分ける */
       background: #ffffff;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -184,10 +209,11 @@ body {
 
     /* 📌 日付の見出し */
     .task-date {
-      font-size: 20px;
+      font-size: 14px;
+      margin: 5px 0;    
       font-weight: bold;
-      color: #00776e;
-      border-bottom: 2px solid #00776e;
+      color: #1E1E4B;
+      border-bottom: 2px solid #1E1E4B;
       padding-bottom: 5px;
       margin-bottom: 10px;
     }
@@ -200,9 +226,20 @@ body {
     }
 
     .task-table th, .task-table td {
-      padding: 8px;
-      border: 1px solid #ECECEF;
+      padding: 8px 12px;
+      border: 1px solid #1E1E4B;
+      padding: 6px 10px;      /* テーブルセルの余白を最適化 */
+      text-align: center;     /* テキストを中央揃えにして視認性向上 */
+      
     }
+
+    .task-table button {
+      padding: 4px 8px;  /* ボタンのパディングを小さく */
+      font-size: 12px;   /* フォントサイズを小さく */
+      margin: 2px;       /* ボタン間の余白を小さく */
+      display: inline-block; /* 横並びを維持 */
+    }
+    
 
     /* 📌 フェーズのアイコン */
     .phase-icon {
@@ -221,9 +258,9 @@ body {
       background: #1E1E4B;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       color: #ECECEF;
-    
+      border: 2px solid white;  /* 白色のボーダー */
     }
 
     #taskEditPopup h2 {
@@ -240,10 +277,12 @@ body {
     }
 
     #taskEditPopup button {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
+      width: 40%;
       margin-top: 10px;
+      padding: 4px 8px;  /* ボタンのパディングを小さく */
+      font-size: 12px;   /* フォントサイズを小さく */
+      margin: 15px 10px;       /* ボタン間の余白を小さく */
+      display: inline-block; /* 横並びを維持 */
     }
 
 
@@ -268,31 +307,30 @@ body {
     }
   }
   
-  /* ✨ タブ切り替え */
-  .tab-container {
+   /* タブ切り替えスタイル */
+   .tab-container {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
     margin-bottom: 20px;
   }
-  
   .tab-button {
-    flex: 1;
-    max-width: 150px;
-    padding: 12px;
+    padding: 10px 20px;
     cursor: pointer;
     border: none;
     background: #1E1E4B;
     color: #ECECEF;
     font-size: 16px;
     transition: 0.3s;
-    text-align: center;
-    
   }
-  
   .tab-button.active {
     background: #33A1DD;
     color: #1E1E4B;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
   }
   
   @media (max-width: 600px) {
@@ -320,6 +358,41 @@ body {
   .popup.active {
     display: block;
   }
+
+  /* ✅ タスク詳細内のボタン配置 */
+#popup li {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* ボタンと入力欄の間隔 */
+  margin-bottom: 10px;
+}
+
+#popup input[type="date"] {
+  padding: 4px 8px;
+  font-size: 14px;
+  width: 130px;
+}
+
+#popup button {
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #33A1DD;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 4px;
+}
+
+#popup button:hover {
+  background-color: #1E1E4B;
+}
+
+.highlight {
+  background-color: #FFFFCC !important;  /* ✅ 強調表示用の色 */
+  transition: background-color 1s ease;
+}
+
   
   /* 📱 モバイル最適化 */
   @media (max-width: 600px) {
