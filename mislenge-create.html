@@ -4,6 +4,32 @@
   <meta charset="UTF-8">
   <title>Mislenge & Project 作成</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* タブ切り替えスタイル */
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: #1E1E4B;
+      color: #ECECEF;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    .tab-button.active {
+      background: #33A1DD;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <nav>
