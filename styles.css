@@ -5,8 +5,8 @@
 /* 🌟 グローバルスタイル */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #1E1E4B;
+    color: #ECECEF;
     margin: 0;
     padding: 0;
     display: flex;
@@ -17,7 +17,7 @@ body {
   /* 📌 ナビゲーションバー */
   nav {
     width: 100%;
-    background: #00776e;
+    background: #1E1E4B;
     padding: 10px 0;
     text-align: center;
     display: flex;
@@ -37,7 +37,7 @@ body {
   }
   
   nav a:hover {
-    background: #e66b00;
+    background: #33A1DD;
   }
   
   /* 🔹 ページ全体 */
@@ -66,15 +66,15 @@ body {
   }
   
   th {
-    background: #9ac387;
-    color: white;
+    background: #33A1DD;
+    color: #1E1E4B;
   }
   
   
   /* 🔘 ボタン */
   button {
-    background: #e66b00;
-    color: white;
+    background: #33A1DD;
+    color: #1E1E4B;
     border: none;
     padding: 12px;
     font-size: 16px;
@@ -87,7 +87,8 @@ body {
   }
   
   button:hover {
-    background: #00776e;
+    background: #ECECEF;
+    color: #1E1E4B;
   }
   
   /* 🏷️ フォーム */
@@ -118,8 +119,8 @@ body {
   
   /* 📌 カード型プロジェクト一覧 */
   .project-card {
-    background: #00776e;
-    color: white;
+    background: #33A1DD;
+    color: #1E1E4B;
     padding: 15px;
     margin: 10px;
     border-radius: 8px;
@@ -161,12 +162,12 @@ body {
 
    /* Task の背景色 */
     .task-row {
-      background-color: #f0f8ff; /* 薄い青 */
+      background-color:#283593; /* 薄い青 */
     }
 
     /* Schedule の背景色 */
     .schedule-row {
-      background-color: #fff3e0; /* 薄いオレンジ */
+      background-color: #1565C0; /* 薄いオレンジ */
     }
 
       
@@ -198,7 +199,7 @@ body {
 
     .task-table th, .task-table td {
       padding: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid #ECECEF;
     }
 
     /* 📌 フェーズのアイコン */
@@ -215,10 +216,12 @@ body {
     #taskEditPopup {
       width: 90%;
       max-width: 400px;
-      background: white;
+      background: #1E1E4B;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      color: #ECECEF;
+    
     }
 
     #taskEditPopup h2 {
@@ -277,15 +280,17 @@ body {
     padding: 12px;
     cursor: pointer;
     border: none;
-    background: #9ac387;
-    color: white;
+    background: #1E1E4B;
+    color: #ECECEF;
     font-size: 16px;
     transition: 0.3s;
     text-align: center;
+    
   }
   
   .tab-button.active {
-    background: #00776e;
+    background: #33A1DD;
+    color: #1E1E4B;
   }
   
   @media (max-width: 600px) {
