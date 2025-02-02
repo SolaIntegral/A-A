@@ -24,6 +24,16 @@
       </thead>
       <tbody id="todayTable"></tbody>
     </table>
+
+    <h1>📝 毎日の記録</h1>
+    <div class="record-container">
+      <div class="record-input">
+        <input type="text" id="recordTag" placeholder="タグ" />
+        <textarea id="recordContent" placeholder="内容を入力"></textarea>
+        <button onclick="saveRecord()">保存</button>
+      </div>
+      <div class="record-list" id="recordList"></div>
+    </div>
   </div>
 
   <script src="common.js"></script>
@@ -51,6 +61,54 @@
     });
 
     })();
+
+    // 保存ボタンが押されたときの処理
+function saveRecord() {
+  const tag = document.getElementById("recordTag").value.trim();
+  const content = document.getElementById("recordContent").value.trim();
+  
+  if (!tag || !content) {
+    alert("タグと内容を入力してください。");
+    return;
+  }
+
+  const newRecord = {
+    id: Date.now().toString(),
+    date: new Date().toLocaleString(),
+    tag,
+    content
+  };
+
+  const records = getDailyRecords();
+  records.unshift(newRecord); // 新しい記録を先頭に追加
+  saveDailyRecords(records);
+
+  displayRecords();
+  
+  // 入力欄をクリア
+  document.getElementById("recordTag").value = "";
+  document.getElementById("recordContent").value = "";
+}
+
+// 保存された記録の表示
+function displayRecords() {
+  const records = getDailyRecords();
+  const recordList = document.getElementById("recordList");
+
+  recordList.innerHTML = records.map(record => `
+    <div class="record-item">
+      <time>${record.date}</time>
+      <strong>#${record.tag}</strong>
+      <p>${record.content}</p>
+    </div>
+  `).join("");
+}
+
+// ページ読み込み時に記録を表示
+window.onload = function() {
+  displayRecords();
+};
+
   </script>
 </body>
 </html>

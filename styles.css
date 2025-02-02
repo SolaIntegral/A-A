@@ -110,6 +110,83 @@ body {
     font-weight: bold;
   }
 
+
+  /* 🗂️ 毎日の記録セクション */
+.record-container {
+  background: #ffffff;
+  border: 2px solid #33A1DD;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+}
+
+.record-input {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-input input,
+.record-input textarea {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  height: 30px;         /* タグ入力欄の縦幅を指定 */
+}
+
+.record-input textarea {
+  resize: vertical;
+}
+
+.record-input button {
+  background: #33A1DD;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.record-input button:hover {
+  background: #1E1E4B;
+}
+
+/* 📋 保存された記録リスト */
+.record-list {
+  max-height: 300px; /* 記録部分のみスクロール */
+  overflow-y: auto;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.record-item {
+  background: #ECECEF;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: #1E1E4B;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.record-item strong {
+  color: #33A1DD;
+}
+
+.record-item time {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
   /* 📌 プロジェクト一覧のグリッドレイアウト */
   .project-grid {
     display: grid;

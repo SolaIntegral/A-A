@@ -100,3 +100,14 @@ function moveProject(fromIndex, toIndex) {
   projects.splice(toIndex, 0, movedProject);
   saveProjects(projects);
 }
+
+const STORAGE_KEY_RECORDS = "dailyRecords";
+
+// 毎日の記録の取得・保存
+function getDailyRecords() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_RECORDS)) || [];
+}
+
+function saveDailyRecords(records) {
+  localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(records));
+}
