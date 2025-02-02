@@ -77,11 +77,10 @@
     (function() {
       const mislengeList = getMislenge();
       const projects = getProjects();
-      const tbody = document.getElementById("taskContainer");
+      const taskContainer = document.getElementById("taskContainer");
 
       // タスクとスケジュールの統一リストを作成し、日付ごとにグループ化
       const groupedMislenge = {};
-
       mislengeList.forEach(item => {
           // Task は `scheduledDate`、Schedule は `scheduleDate` を基準にグループ化
           const dateKey = item.type === "Task" 
@@ -94,6 +93,9 @@
 
           groupedMislenge[dateKey].push(item);
       });
+
+      // 日付順にソート
+    const sortedDates = Object.keys(groupedMislenge).sort((a, b) => new Date(a) - new Date(b));
 
       // タスク一覧をクリア
       taskContainer.innerHTML = "";
@@ -120,7 +122,68 @@
       }
     };
 
-    // 日付ごとのグループを作成
+          // グループ表示
+          sortedDates.forEach(date => {
+        const section = document.createElement("div");
+        section.classList.add("task-group");
+
+        const header = document.createElement("h2");
+        header.classList.add("task-date");
+        header.textContent = date;
+        header.style.cursor = "pointer";
+        header.onclick = () => {
+          const table = section.querySelector(".task-table");
+          table.style.display = table.style.display === "none" ? "table" : "none";
+        };
+
+        section.appendChild(header);
+
+        const table = document.createElement("table");
+        table.classList.add("task-table");
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>種類</th>
+              <th>名前</th>
+              <th>関連プロジェクト</th>
+              <th>締め切り日 / 場所</th>
+              <th>予定日</th>
+              <th>フェーズ</th>
+              <th>優先度</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${groupedMislenge[date].map(item => {
+              const project = projects.find(p => p.id === item.projectId);
+              const isTask = item.type === "Task";
+              return `
+                <tr class="${isTask ? 'task-row' : 'schedule-row'}" id="task-${item.id}" data-task-id="${item.id}">
+                  <td>${isTask ? "📝 Task" : "📅 Schedule"}</td>
+                  <td>${item.name}</td>
+                  <td>${project ? project.name : "（なし）"}</td>
+                  <td>${isTask ? (item.deadline || "-") : (item.location || "未設定")}</td>
+                  <td>${isTask ? (item.scheduledDate || "未設定") : (item.scheduleDate || "未設定")}</td>
+                  <td>${isTask ? `
+                    <span class="phase-icon" onclick="togglePhase('${item.id}', 'phase1')">${item.phase1 ? '✅' : '❌'}</span>
+                    <span class="phase-icon" onclick="togglePhase('${item.id}', 'phase2')">${item.phase2 ? '✅' : '❌'}</span>
+                    <span class="phase-icon" onclick="togglePhase('${item.id}', 'phase3')">${item.phase3 ? '✅' : '❌'}</span>
+                  ` : "-"}</td>
+                  <td>${isTask ? (item.priority || "未設定") : "-"}</td>
+                  <td>
+                    <button onclick="showTaskEditPopup('${item.id}')">編集</button>
+                    <button onclick="handleDelete('${item.id}')">削除</button>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        `;
+        section.appendChild(table);
+        taskContainer.appendChild(section);
+      });
+
+    /*日付ごとのグループを作成
     Object.keys(groupedMislenge).forEach(date => {
         const section = document.createElement("div");
         section.classList.add("task-group");
@@ -180,7 +243,7 @@
 
         taskContainer.appendChild(section);
     });
-
+*/
     // 削除機能（リストを即時更新）
     window.handleDelete = function(mislengeId) {
         if (confirm("このタスクを削除しますか？")) {
