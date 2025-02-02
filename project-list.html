@@ -4,14 +4,7 @@
   <meta charset="UTF-8">
   <title>プロジェクト一覧</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .popup-content {
-    max-height: 60vh;       /* ✅ 内部スクロールの高さ制限 */
-    overflow-y: auto;       /* ✅ スクロール可能に */
-    padding: 10px 0;
-}
-
-  </style>
+  <link rel="icon" href="icon.png" type="image/png">
 </head>
 <body>
   <nav>
@@ -30,9 +23,7 @@
   <!-- ポップアップ（プロジェクト詳細） -->
   <div id="popup" class="popup">
     <h2 id="popupTitle"></h2>
-    <div class="popup-content"> <!-- ✅ スクロール対象のコンテンツ -->
     <ul id="popupList"></ul>
-    </div>
     <button onclick="closePopup()">閉じる</button>
   </div>
 
