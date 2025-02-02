@@ -5,6 +5,15 @@
   <title>Task一覧</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="icon.png" type="image/png">
+  <style>
+    #taskEditPopup .popup-content,
+    #popup .popup-content {
+        max-height: 60vh;       /* ✅ スクロール範囲の高さ */
+        overflow-y: auto;       /* ✅ スクロールを有効化 */
+        padding-right: 10px;    /* ✅ スクロールバーのための余白 */
+    }
+
+  </style>
 </head>
 <body>
   <nav>
@@ -21,7 +30,7 @@
 
   <div id="taskEditPopup" class="popup">
     <h2>タスク編集</h2>
-
+    <div class="popup-content"> <!-- ✅ 追加 -->
     <label for="editTaskName">タスク名</label>
     <input type="text" id="editTaskName">
 
