@@ -1,114 +1,177 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>ダッシュボード</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="icon.png" type="image/png">
+  <title>タスク管理アプリ</title>
+  <!-- Firebase SDK（compat版）の読み込み -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <nav>
-    <a href="index.html">🏠 ダッシュボード</a>
-    <a href="project-list.html">📂 プロジェクト一覧</a>
-    <a href="task-list.html">✅ タスク一覧</a>
-    <a href="mislenge-create.html">➕ Mission作成</a>
-  </nav>
+  <h1>タスク管理アプリ</h1>
 
-  <div class="container">
-    <h1>📅 本日の予定</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>種別</th><th>名称</th><th>関連プロジェクト</th><th>予定日</th><th>フェーズ</th>
-        </tr>
-      </thead>
-      <tbody id="todayTable"></tbody>
-    </table>
-
-    <h1>📝 毎日の記録</h1>
-    <div class="record-container">
-      <div class="record-input">
-        <input type="text" id="recordTag" placeholder="タグ" />
-        <textarea id="recordContent" placeholder="内容を入力"></textarea>
-        <button onclick="saveRecord()">保存</button>
-      </div>
-      <div class="record-list" id="recordList"></div>
-    </div>
+  <!-- ユーザー認証 -->
+  <div id="auth">
+    <h2>ユーザー登録 / ログイン</h2>
+    <input type="email" id="email" placeholder="メールアドレス">
+    <input type="password" id="password" placeholder="パスワード">
+    <button id="signup">サインアップ</button>
+    <button id="login">ログイン</button>
+    <button id="logout" style="display:none;">ログアウト</button>
   </div>
 
-  <script src="common.js"></script>
+  <!-- タスク管理UI -->
+  <div id="taskApp" style="display:none;">
+    <h2>タスク管理</h2>
+    
+    <!-- タスク追加フォーム -->
+    <input type="text" id="taskName" placeholder="タスク名">
+    <input type="date" id="dueDate">
+    <input type="text" id="memo" placeholder="メモ">
+    <input type="text" id="tags" placeholder="タグ（カンマ区切り）">
+    <button id="addTask">タスク追加</button>
+
+    <h3>タスク一覧</h3>
+    <ul id="taskList"></ul>
+
+    <!--
+    <h3>タグ管理</h3>
+    <input type="text" id="tagInput" placeholder="新しいタグ">
+    <button id="addTag">タグ追加</button>
+    <ul id="tagList"></ul>
+  </div>
+  -->
+
   <script>
-    (function() {
-      const today = getTodayString();
-      const mislengeList = getMislenge();
-      const tbody = document.getElementById("todayTable");
+    // ① Firebaseの設定情報
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Unr7lG5puI4n3tDZJ4qTNeAvVh6OABg",
+      authDomain: "bady-e1de5.firebaseapp.com",
+      projectId: "bady-e1de5",
+      storageBucket: "bady-e1de5.firebasestorage.app",
+      messagingSenderId: "334821642950",
+      appId: "1:334821642950:web:aa7cd88b342ad6e4c4bdc7",
+      measurementId: "G-9W2M171QBK"
+    };
 
-      mislengeList
-    .filter(m => m.scheduledDate === today || (m.type === "Schedule" && m.scheduledDate === today))
-    .forEach(m => {
-      let phaseHTML = (m.type === "Task") ? `${m.phase1 ? '✅' : '❌'} ${m.phase2 ? '✅' : '❌'} ${m.phase3 ? '✅' : '❌'}` : "-";
+    // ② Firebaseの初期化
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-      const tr = document.createElement("tr");
-      const values = [m.type, m.name, m.projectName || "なし", m.scheduledDate, phaseHTML];
+    // ③ UI要素の取得
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const signupBtn = document.getElementById('signup');
+    const loginBtn = document.getElementById('login');
+    const logoutBtn = document.getElementById('logout');
+    const taskAppDiv = document.getElementById('taskApp');
+    const taskList = document.getElementById('taskList');
+    const addTaskBtn = document.getElementById('addTask');
+    const tagList = document.getElementById('tagList');
+    const addTagBtn = document.getElementById('addTag');
 
-      values.forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = value;
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
+    // ④ サインアップ処理
+    signupBtn.addEventListener('click', () => {
+      auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
+        .then(() => console.log("サインアップ成功"))
+        .catch(error => console.error("サインアップエラー:", error));
     });
 
-    })();
+    // ⑤ ログイン処理
+    loginBtn.addEventListener('click', () => {
+      auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
+        .then(() => console.log("ログイン成功"))
+        .catch(error => console.error("ログインエラー:", error));
+    });
 
-    // 保存ボタンが押されたときの処理
-function saveRecord() {
-  const tag = document.getElementById("recordTag").value.trim();
-  const content = document.getElementById("recordContent").value.trim();
-  
-  if (!tag || !content) {
-    alert("タグと内容を入力してください。");
-    return;
-  }
+    // ⑥ ログアウト処理
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => console.log("ログアウトしました"));
+    });
 
-  const newRecord = {
-    id: Date.now().toString(),
-    date: new Date().toLocaleString(),
-    tag,
-    content
-  };
+    // ⑦ 認証状態の監視
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('auth').style.display = 'none';
+        taskAppDiv.style.display = 'block';
+        logoutBtn.style.display = 'inline';
+        loadTasks(user.uid);
+        loadTags(user.uid);
+      } else {
+        document.getElementById('auth').style.display = 'block';
+        taskAppDiv.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        taskList.innerHTML = '';
+        tagList.innerHTML = '';
+      }
+    });
 
-  const records = getDailyRecords();
-  records.unshift(newRecord); // 新しい記録を先頭に追加
-  saveDailyRecords(records);
+    // ⑧ タスク追加処理
+    addTaskBtn.addEventListener('click', () => {
+      const user = auth.currentUser;
+      if (!user) return alert("ログインしてください");
 
-  displayRecords();
-  
-  // 入力欄をクリア
-  document.getElementById("recordTag").value = "";
-  document.getElementById("recordContent").value = "";
-}
+      const taskData = {
+        text: document.getElementById('taskName').value,
+        dueDate: document.getElementById('dueDate').value,
+        memo: document.getElementById('memo').value,
+        tags: document.getElementById('tags').value ? 
+          document.getElementById('tags').value.split(',').map(tag => tag.trim()) : [],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
 
-// 保存された記録の表示
-function displayRecords() {
-  const records = getDailyRecords();
-  const recordList = document.getElementById("recordList");
+      db.collection('users').doc(user.uid).collection('tasks').add(taskData);
+    });
 
-  recordList.innerHTML = records.map(record => `
-    <div class="record-item">
-      <time>${record.date}</time>
-      <strong>#${record.tag}</strong>
-      <p>${record.content}</p>
-    </div>
-  `).join("");
-}
+    // ⑨ タスクの読み込み
+    function loadTasks(uid) {
+      db.collection('users').doc(uid).collection('tasks').orderBy('timestamp')
+        .onSnapshot(snapshot => {
+          taskList.innerHTML = '';
+          snapshot.forEach(doc => {
+            const task = doc.data();
+            const tags = task.tags || []; // ここで空配列をデフォルト値に設定
 
-// ページ読み込み時に記録を表示
-window.onload = function() {
-  displayRecords();
-};
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <strong>${task.text}</strong>（${task.dueDate || '未設定'}）
+              <p>${task.memo || ''}</p>
+              <p>タグ: ${tags.length ? tags.join(', ') : 'なし'}</p>
+              <button onclick="editTask('${doc.id}', '${task.text}')">編集</button>
+              <button onclick="deleteTask('${doc.id}')">削除</button>
+            `;
+            taskList.appendChild(li);
+          });
+        });
+    }
 
+    function editTask(taskId, text) {
+      const user = auth.currentUser;
+      const newText = prompt("タスク名を編集:", text);
+      if (newText) {
+        db.collection('users').doc(user.uid).collection('tasks').doc(taskId).update({ text: newText });
+      }
+    }
+
+    function deleteTask(taskId) {
+      const user = auth.currentUser;
+      db.collection('users').doc(user.uid).collection('tasks').doc(taskId).delete();
+    }
+
+    function loadTags(uid) {
+      db.collection('users').doc(uid).collection('tags').onSnapshot(snapshot => {
+        tagList.innerHTML = '';
+        snapshot.forEach(doc => {
+          tagList.innerHTML += `<li>${doc.data().name} <button onclick="deleteTag('${doc.id}')">削除</button></li>`;
+        });
+      });
+    }
+
+    function deleteTag(tagId) {
+      db.collection('users').doc(auth.currentUser.uid).collection('tags').doc(tagId).delete();
+    }
   </script>
 </body>
 </html>
