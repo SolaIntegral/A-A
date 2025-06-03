@@ -1,37 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  Button,
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-} from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { TextField, Button, Box, Alert, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ja from 'date-fns/locale/ja';
 
-const TaskForm = ({ initialData, onSubmit, onCancel }) => {
+const TaskForm = ({ initialData, onSubmit, onCancel, errorMessage }) => {
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
-    category: '',
-    status: 'pending',
     due_date: null,
+    scheduled_date: null,
     estimated_time: '',
-    is_daily_top_task: false,
+    related_status_type: '',
   });
-
   const [errors, setErrors] = useState({});
+
+  const STATUS_TYPE_CHOICES = [
+    { value: 'learning', label: '学習力' },
+    { value: 'creativity', label: '創造力' },
+    { value: 'execution', label: '実行力' },
+    { value: 'communication', label: 'コミュニケーション力' },
+  ];
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        ...initialData,
+        title: initialData.title || '',
         due_date: initialData.due_date ? new Date(initialData.due_date) : null,
+        scheduled_date: initialData.scheduled_date ? new Date(initialData.scheduled_date) : null,
+        estimated_time: initialData.estimated_time || '',
+        related_status_type: initialData.related_status_type || '',
       });
     }
   }, [initialData]);
@@ -39,7 +37,7 @@ const TaskForm = ({ initialData, onSubmit, onCancel }) => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.title.trim()) {
-      newErrors.title = 'タイトルは必須です';
+      newErrors.title = 'タスク名は必須です';
     }
     if (formData.estimated_time && isNaN(formData.estimated_time)) {
       newErrors.estimated_time = '有効な数値を入力してください';
@@ -55,110 +53,63 @@ const TaskForm = ({ initialData, onSubmit, onCancel }) => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {errorMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>
+      )}
       <TextField
         fullWidth
-        label="タイトル"
+        label="タスク名"
         name="title"
         value={formData.title}
-        onChange={handleChange}
+        onChange={e => setFormData({ ...formData, title: e.target.value })}
         error={!!errors.title}
         helperText={errors.title}
-        sx={{ mb: 2 }}
+        sx={{ mb: 3 }}
       />
-
-      <TextField
-        fullWidth
-        label="説明"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        multiline
-        rows={4}
-        sx={{ mb: 2 }}
-      />
-
-      <TextField
-        fullWidth
-        label="カテゴリー"
-        name="category"
-        value={formData.category}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
-
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>ステータス</InputLabel>
-        <Select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          label="ステータス"
-        >
-          <MenuItem value="pending">未着手</MenuItem>
-          <MenuItem value="in_progress">進行中</MenuItem>
-          <MenuItem value="completed">完了</MenuItem>
-          <MenuItem value="snoozed">延期</MenuItem>
-        </Select>
-      </FormControl>
-
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ja}>
-        <DateTimePicker
-          label="期限"
+        <DatePicker
+          label="締切日"
           value={formData.due_date}
-          onChange={(newValue) => {
-            setFormData((prev) => ({ ...prev, due_date: newValue }));
-          }}
-          renderInput={(params) => (
-            <TextField {...params} fullWidth sx={{ mb: 2 }} />
-          )}
+          onChange={date => setFormData({ ...formData, due_date: date })}
+          renderInput={params => <TextField {...params} fullWidth sx={{ mb: 3 }} />}
+        />
+        <DatePicker
+          label="実施予定日"
+          value={formData.scheduled_date}
+          onChange={date => setFormData({ ...formData, scheduled_date: date })}
+          renderInput={params => <TextField {...params} fullWidth sx={{ mb: 3 }} />}
         />
       </LocalizationProvider>
-
       <TextField
         fullWidth
-        label="予定時間（分）"
+        label="予定作業時間（分）"
         name="estimated_time"
         type="number"
         value={formData.estimated_time}
-        onChange={handleChange}
+        onChange={e => setFormData({ ...formData, estimated_time: e.target.value })}
         error={!!errors.estimated_time}
         helperText={errors.estimated_time}
-        sx={{ mb: 2 }}
+        sx={{ mb: 3 }}
       />
-
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>デイリートップタスク</InputLabel>
+      <FormControl fullWidth sx={{ mb: 3 }}>
+        <InputLabel>関連ステータス</InputLabel>
         <Select
-          name="is_daily_top_task"
-          value={formData.is_daily_top_task}
-          onChange={handleChange}
-          label="デイリートップタスク"
+          name="related_status_type"
+          value={formData.related_status_type || ''}
+          label="関連ステータス"
+          onChange={e => setFormData({ ...formData, related_status_type: e.target.value })}
         >
-          <MenuItem value={true}>はい</MenuItem>
-          <MenuItem value={false}>いいえ</MenuItem>
+          <MenuItem value="">選択してください</MenuItem>
+          {STATUS_TYPE_CHOICES.map(opt => (
+            <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+          ))}
         </Select>
-        <FormHelperText>
-          このタスクをデイリートップタスクとして設定しますか？
-        </FormHelperText>
       </FormControl>
-
       <Box display="flex" gap={2} justifyContent="flex-end">
-        <Button variant="outlined" onClick={onCancel}>
-          キャンセル
-        </Button>
-        <Button type="submit" variant="contained" color="primary">
-          {initialData ? '更新' : '作成'}
-        </Button>
+        <Button variant="outlined" onClick={onCancel}>キャンセル</Button>
+        <Button type="submit" variant="contained" color="primary">{initialData ? '更新' : '作成'}</Button>
       </Box>
     </Box>
   );

@@ -58,6 +58,10 @@ const TaskList = () => {
     }
   };
 
+  const handleEdit = (taskId) => {
+    navigate(`/tasks/edit/${taskId}`);
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
@@ -83,7 +87,7 @@ const TaskList = () => {
             key={task.id}
             task={task}
             onComplete={handleComplete}
-            onSnooze={handleSnooze}
+            onEdit={handleEdit}
             onDelete={handleDelete}
           />
         ))

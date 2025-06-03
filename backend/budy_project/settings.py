@@ -135,6 +135,20 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Reactの開発サーバー
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 # REST Framework設定
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

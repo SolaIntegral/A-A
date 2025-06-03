@@ -7,6 +7,7 @@ import { createTask, getTask, updateTask } from '../api/tasks';
 const TaskFormPage = () => {
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -28,6 +29,7 @@ const TaskFormPage = () => {
 
   const handleSubmit = async (formData) => {
     setLoading(true);
+    setApiError('');
     try {
       if (id) {
         await updateTask(id, formData);
@@ -36,6 +38,13 @@ const TaskFormPage = () => {
       }
       navigate('/tasks');
     } catch (error) {
+      if (error.response && error.response.data && error.response.data.detail) {
+        setApiError(error.response.data.detail);
+      } else if (error.response && error.response.data && typeof error.response.data === 'string') {
+        setApiError(error.response.data);
+      } else {
+        setApiError('タスクの保存に失敗しました。');
+      }
       console.error('タスクの保存に失敗しました:', error);
     } finally {
       setLoading(false);
@@ -58,6 +67,7 @@ const TaskFormPage = () => {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           loading={loading}
+          errorMessage={apiError}
         />
       </Box>
     </Container>

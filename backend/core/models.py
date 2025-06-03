@@ -20,6 +20,7 @@ class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
+    scheduled_date = models.DateTimeField(null=True, blank=True)
     estimated_time = models.IntegerField(help_text="予定作業時間 (分)", null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     is_daily_top = models.BooleanField(default=False, help_text="今日の表示タスク3つに含まれるか")

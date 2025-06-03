@@ -30,6 +30,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <Button color="inherit" component={RouterLink} to="/tasks/add">
                 タスク追加
               </Button>
+              <Button color="inherit" component={RouterLink} to="/profile">
+                プロフィール
+              </Button>
               <Button color="inherit" onClick={handleLogout}>
                 ログアウト
               </Button>

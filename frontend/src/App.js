@@ -7,6 +7,9 @@ import TaskList from './pages/TaskList';
 import TaskFormPage from './pages/TaskForm';
 import Auth from './pages/Auth';
 import { getCurrentUser } from './api/auth';
+import Dashboard from './pages/Dashboard';
+import TaskTimerPage from './pages/TaskTimerPage';
+import ProfileStatus from './components/ProfileStatus';
 
 const theme = createTheme({
   palette: {
@@ -76,7 +79,7 @@ function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Navigate to="/tasks" />
+                <Dashboard />
               </PrivateRoute>
             }
           />
@@ -105,6 +108,14 @@ function App() {
             }
           />
           <Route
+            path="/tasks/timer/:id"
+            element={
+              <PrivateRoute>
+                <TaskTimerPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/auth"
             element={
               isAuthenticated ? (
@@ -114,6 +125,7 @@ function App() {
               )
             }
           />
+          <Route path="/profile" element={<ProfileStatus />} />
         </Routes>
       </Router>
     </ThemeProvider>
