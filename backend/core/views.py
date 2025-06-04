@@ -116,9 +116,18 @@ class AchievementViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def dashboard_tasks(request):
     user = request.user
-    tasks = Task.objects.filter(user=user).order_by('scheduled_date', 'due_date')[:3]
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    tomorrow = today + datetime.timedelta(days=1)
+    # 未完了タスク（締切日が古い順、過ぎているものも含む）
+    incomplete_qs = Task.objects.filter(user=user, status__in=['pending', 'in_progress']) \
+        .order_by('due_date', 'scheduled_date')[:3]
+    incomplete = list(incomplete_qs)
+    # 今日完了にしたタスクのみ
+    completed = Task.objects.filter(user=user, status='completed', completed_at__gte=today, completed_at__lt=tomorrow).order_by('due_date', 'scheduled_date')
+    return Response({
+        'incomplete': TaskSerializer(incomplete, many=True).data,
+        'completed': TaskSerializer(completed, many=True).data,
+    })
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
