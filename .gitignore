@@ -37,4 +37,13 @@ Thumbs.db
 
 # 一時ファイル
 *.tmp
-*.temp 
+*.temp
+
+# Legacy files (参考用)
+# legacy/ フォルダは保持するため除外しない
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log 
