@@ -197,31 +197,8 @@ bady/
 
 1. このリポジトリをフォーク
 2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add amazing feature'`)
+3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
 4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
 5. プルリクエストを作成
 
-## 📄 ライセンス
-
-このプロジェクトはMITライセンスの下で公開されています。
-
-## 📞 サポート
-
-問題や質問がある場合は、Issueを作成してください。
-
----
-
 **A-A**で効率的なタスク管理と継続的な成長を実現しましょう！ 🎯
-
-
-今後のサイト更新について
-今後サイトを更新したい場合は、以下の2つのコマンドを再度実行するだけです。
-ビルド:
-Apply to firebase-con...
-Run
-build
-デプロイ:
-Apply to firebase-con...
-Run
-hosting
-この手順で、いつでも最新版にサイトを更新できます。
