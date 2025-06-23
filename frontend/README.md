@@ -1,4 +1,6 @@
-# Budy Frontend
+# A-A Frontend
+
+This is the frontend for the A-A application, built with React and Material-UI.
 
 ## セットアップ
 

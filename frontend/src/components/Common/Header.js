@@ -34,7 +34,7 @@ export default function Header() {
           sx={{ flexGrow: 1, cursor: user ? 'pointer' : 'default' }}
           onClick={user ? () => navigate('/') : undefined}
         >
-          Budy
+          A-A
         </Typography>
         
         {user ? (
