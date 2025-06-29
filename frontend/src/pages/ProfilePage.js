@@ -1,148 +1,156 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
   Typography,
-  Grid,
-  CircularProgress
+  Paper,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Divider
 } from '@mui/material';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 import { useAuth } from '../components/Auth/AuthProvider';
 import { initFirebase } from '../firebase';
 
-export default function ProfilePage() {
+export default function MemoryPage() {
   const { user } = useAuth();
-  const [userData, setUserData] = useState(null);
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [completedProjects, setCompletedProjects] = useState([]);
+  const [editMemo, setEditMemo] = useState({});
+  const [loading, setLoading] = useState(false);
 
+  // 完了タスク取得
   useEffect(() => {
     if (!user) return;
-
-    const loadUserData = async () => {
-      try {
-        const { db } = await initFirebase();
-        const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (doc) => {
-          if (doc.exists()) {
-            setUserData(doc.data());
-          }
-        });
-
-        return unsubscribe;
-      } catch (error) {
-        console.error('ユーザーデータ読み込みエラー:', error);
-      }
+    const fetchTasks = async () => {
+      const { db } = await initFirebase();
+      const q = query(
+        collection(db, 'tasks'),
+        where('userId', '==', user.uid),
+        where('completed', '==', true),
+        orderBy('updatedAt', 'desc')
+      );
+      onSnapshot(q, (snapshot) => {
+        setCompletedTasks(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      });
     };
-
-    loadUserData();
+    fetchTasks();
   }, [user]);
 
-  if (!userData) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Typography>読み込み中...</Typography>
-      </Box>
-    );
-  }
+  // 完了プロジェクト取得（終了日が過去 or 明示的な完了フラグ）
+  useEffect(() => {
+    if (!user) return;
+    const fetchProjects = async () => {
+      const { db } = await initFirebase();
+      const q = query(
+        collection(db, 'projects'),
+        where('userId', '==', user.uid),
+        orderBy('endDate', 'desc')
+      );
+      onSnapshot(q, (snapshot) => {
+        // 終了日が今日以前のものだけ表示
+        const today = new Date().toISOString().split('T')[0];
+        setCompletedProjects(snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(p => p.endDate && p.endDate <= today)
+        );
+      });
+    };
+    fetchProjects();
+  }, [user]);
 
-  const skills = userData.skills || {
-    learning: { level: 1, exp: 0 },
-    creativity: { level: 1, exp: 0 },
-    execution: { level: 1, exp: 0 },
-    communication: { level: 1, exp: 0 }
+  // メモ編集用
+  const handleMemoChange = (type, id, value) => {
+    setEditMemo(prev => ({ ...prev, [`${type}_${id}`]: value }));
   };
 
-  const totalLevel = Object.values(skills).reduce((sum, skill) => sum + skill.level, 0);
-  const totalExp = Object.values(skills).reduce((sum, skill) => sum + skill.exp, 0);
-  const maxExp = totalLevel * 100; // 次のレベルまでの経験値
-
-  const skillLabels = {
-    learning: '学習力',
-    creativity: '創造力',
-    execution: '実行力',
-    communication: 'コミュニケーション力'
-  };
-
-  const getSkillProgress = (skill) => {
-    const expInLevel = skill.exp % 100;
-    return (expInLevel / 100) * 100;
+  const handleSaveMemo = async (type, item) => {
+    setLoading(true);
+    try {
+      const { db } = await initFirebase();
+      const ref = doc(db, type === 'task' ? 'tasks' : 'projects', item.id);
+      await updateDoc(ref, { learning: editMemo[`${type}_${item.id}`] || '' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Box p={3}>
-      {/* 全体レベル */}
-      <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
-        <Typography variant="h5" gutterBottom>
-          全体レベル
-        </Typography>
-        <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
-          <CircularProgress
-            variant="determinate"
-            value={(totalExp / maxExp) * 100}
-            size={100}
-            thickness={4}
-            sx={{ color: '#2196f3' }}
-          />
-          <Box
-            sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              position: 'absolute',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography variant="h4" component="div" color="primary">
-              {totalLevel}
-            </Typography>
-          </Box>
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          経験値: {totalExp} / {maxExp}
-        </Typography>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>メモリーページ</Typography>
+      <Typography color="text.secondary" sx={{ mb: 3 }}>
+        完了したタスクやプロジェクトの「学び」や「振り返り」を記録・参照できます。
+      </Typography>
+
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Typography variant="h5" gutterBottom>完了したタスク</Typography>
+        {completedTasks.length === 0 && (
+          <Typography color="text.secondary">完了したタスクはありません。</Typography>
+        )}
+        {completedTasks.map(task => (
+          <Card key={task.id} variant="outlined" sx={{ mb: 2 }}>
+            <CardContent>
+              <Typography variant="subtitle1">{task.title} {task.project && <span style={{ color: '#1976d2' }}>#{task.project}</span>}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                完了日: {task.completedAt ? new Date(task.completedAt.seconds * 1000).toLocaleDateString() : '-'}
+              </Typography>
+              <TextField
+                label="学んだこと・振り返り"
+                fullWidth
+                multiline
+                minRows={2}
+                value={editMemo[`task_${task.id}`] !== undefined ? editMemo[`task_${task.id}`] : (task.learning || '')}
+                onChange={e => handleMemoChange('task', task.id, e.target.value)}
+                sx={{ mb: 1 }}
+              />
+            </CardContent>
+            <CardActions>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={() => handleSaveMemo('task', task)}
+                disabled={loading}
+              >保存</Button>
+            </CardActions>
+          </Card>
+        ))}
       </Paper>
 
-      {/* スキル一覧 */}
-      <Grid container spacing={2}>
-        {Object.entries(skills).map(([skillKey, skill]) => (
-          <Grid item xs={12} sm={6} md={3} key={skillKey}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
-                {skillLabels[skillKey]}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h5" gutterBottom>完了したプロジェクト</Typography>
+        {completedProjects.length === 0 && (
+          <Typography color="text.secondary">完了したプロジェクトはありません。</Typography>
+        )}
+        {completedProjects.map(project => (
+          <Card key={project.id} variant="outlined" sx={{ mb: 2 }}>
+            <CardContent>
+              <Typography variant="subtitle1">{project.name}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                期間: {project.startDate || '-'} ~ {project.endDate || '-'}
               </Typography>
-              <Box sx={{ position: 'relative', display: 'inline-flex', mb: 1 }}>
-                <CircularProgress
-                  variant="determinate"
-                  value={getSkillProgress(skill)}
-                  size={80}
-                  thickness={4}
-                  sx={{ color: '#4caf50' }}
-                />
-                <Box
-                  sx={{
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant="h6" component="div" color="success.main">
-                    {skill.level}
-                  </Typography>
-                </Box>
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                経験値: {skill.exp}
-              </Typography>
-            </Paper>
-          </Grid>
+              <TextField
+                label="学んだこと・振り返り"
+                fullWidth
+                multiline
+                minRows={2}
+                value={editMemo[`project_${project.id}`] !== undefined ? editMemo[`project_${project.id}`] : (project.learning || '')}
+                onChange={e => handleMemoChange('project', project.id, e.target.value)}
+                sx={{ mb: 1 }}
+              />
+            </CardContent>
+            <CardActions>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={() => handleSaveMemo('project', project)}
+                disabled={loading}
+              >保存</Button>
+            </CardActions>
+          </Card>
         ))}
-      </Grid>
+      </Paper>
     </Box>
   );
 } 

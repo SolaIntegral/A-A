@@ -109,7 +109,7 @@ export default function TaskCard({ task, onStartTimer }) {
           )}
           
           <Typography variant="h6" component="h2" gutterBottom>
-            {task.title}
+            {task.title} {task.project && (<span style={{ color: '#1976d2', fontWeight: 400 }}>#{task.project}</span>)}
           </Typography>
           
           <Box sx={{ mb: 1 }}>

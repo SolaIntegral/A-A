@@ -35,10 +35,7 @@ export default function TaskForm({ task = null, onClose }) {
     dueDate: task?.dueDate || '',
     scheduledDate: task?.scheduledDate || '',
     estimatedTime: task?.estimatedTime || '',
-    skillCategory: task?.skillCategory || '',
-    taskCategory: task?.taskCategory || '',
     memo: task?.memo || '',
-    tags: task?.tags ? task.tags.join(', ') : '',
     project: task?.project || ''
   });
   const [projects, setProjects] = useState([]);
@@ -68,19 +65,8 @@ export default function TaskForm({ task = null, onClose }) {
 
     try {
       const { db } = await initFirebase();
-      let tagsArray = formData.tags
-        .split(/[\s,]+/)
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
-      if (formData.project) {
-        if (!tagsArray.includes(formData.project)) {
-          tagsArray.push(formData.project);
-        }
-      }
       const taskData = {
         ...formData,
-        tags: tagsArray,
-        project: formData.project,
         userId: user.uid,
         completed: false,
         snoozeCount: 0,
@@ -157,36 +143,6 @@ export default function TaskForm({ task = null, onClose }) {
         inputProps={{ min: 1 }}
       />
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel>関連スキル</InputLabel>
-        <Select
-          value={formData.skillCategory}
-          onChange={handleChange('skillCategory')}
-          label="関連スキル"
-        >
-          {SKILL_CATEGORIES.map(category => (
-            <MenuItem key={category.value} value={category.value}>
-              {category.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth margin="normal">
-        <InputLabel>カテゴリ</InputLabel>
-        <Select
-          value={formData.taskCategory}
-          onChange={handleChange('taskCategory')}
-          label="カテゴリ"
-        >
-          {TASK_CATEGORIES.map(category => (
-            <MenuItem key={category.value} value={category.value}>
-              {category.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
       <TextField
         fullWidth
         label="メモ"
@@ -195,15 +151,6 @@ export default function TaskForm({ task = null, onClose }) {
         value={formData.memo}
         onChange={handleChange('memo')}
         margin="normal"
-      />
-
-      <TextField
-        fullWidth
-        label="ハッシュタグ（カンマ・スペース区切り可）"
-        value={formData.tags}
-        onChange={handleChange('tags')}
-        margin="normal"
-        placeholder="#例1, #例2"
       />
 
       <FormControl fullWidth margin="normal">

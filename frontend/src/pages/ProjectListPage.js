@@ -23,13 +23,14 @@ import { Add, Edit, Delete, ExpandMore } from '@mui/icons-material';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, getDocs } from 'firebase/firestore';
 import { useAuth } from '../components/Auth/AuthProvider';
 import { initFirebase } from '../firebase';
+import dayjs from 'dayjs';
 
 export default function ProjectListPage() {
   const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [openForm, setOpenForm] = useState(false);
   const [editProject, setEditProject] = useState(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '' });
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [tasksByProject, setTasksByProject] = useState({});
@@ -67,7 +68,9 @@ export default function ProjectListPage() {
     setEditProject(project);
     setFormData({
       name: project?.name || '',
-      description: project?.description || ''
+      description: project?.description || '',
+      startDate: project?.startDate || '',
+      endDate: project?.endDate || ''
     });
     setOpenForm(true);
   };
@@ -75,7 +78,7 @@ export default function ProjectListPage() {
   const handleCloseForm = () => {
     setOpenForm(false);
     setEditProject(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '', description: '', startDate: '', endDate: '' });
   };
 
   const handleChange = (e) => {
@@ -121,56 +124,72 @@ export default function ProjectListPage() {
     setExpanded(expanded === projectId ? null : projectId);
   };
 
+  // タイムライン用: プロジェクトの期間の最小・最大日を計算
+  const allDates = projects.flatMap(p => [p.startDate, p.endDate].filter(Boolean));
+  const minDate = allDates.length ? dayjs(allDates.filter(Boolean).sort()[0]) : null;
+  const maxDate = allDates.length ? dayjs(allDates.filter(Boolean).sort().reverse()[0]) : null;
+  const totalDays = minDate && maxDate ? maxDate.diff(minDate, 'day') + 1 : 1;
+
   return (
     <Container maxWidth="md">
       <Box sx={{ mt: 4, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4">プロジェクト一覧</Typography>
+        <Typography variant="h4">プロジェクトタイムライン</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpenForm()}>
           新規作成
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {projects.length === 0 && (
-          <Typography color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-            プロジェクトがありません。新しいプロジェクトを作成しましょう！
-          </Typography>
-        )}
-        {projects.map(project => (
-          <Accordion key={project.id} expanded={expanded === project.id} onChange={() => handleAccordionChange(project.id)}>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <Typography variant="h6">{project.name}</Typography>
-                <Typography variant="body2" color="text.secondary">{project.description}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton onClick={e => { e.stopPropagation(); handleOpenForm(project); }}><Edit /></IconButton>
-                <IconButton color="error" onClick={e => { e.stopPropagation(); handleDelete(project.id); }}><Delete /></IconButton>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>タスク一覧</Typography>
-              {tasksByProject[project.id] && tasksByProject[project.id].length > 0 ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {tasksByProject[project.id].map(task => (
-                    <Card key={task.id} variant="outlined">
-                      <CardContent>
-                        <Typography variant="subtitle1">{task.title}</Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
-                          {Array.isArray(task.tags) && task.tags.map((tag, idx) => (
-                            <Chip key={idx} label={`#${tag}`} size="small" variant="outlined" color="secondary" />
-                          ))}
-                        </Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{task.memo}</Typography>
-                      </CardContent>
-                    </Card>
-                  ))}
+      {/* タイムライン表示 */}
+      <Box sx={{ overflowX: 'auto', mb: 4, border: '1px solid #eee', borderRadius: 2, p: 2, background: '#fafbfc' }}>
+        <Box sx={{ minWidth: 600 }}>
+          {projects.length === 0 && (
+            <Typography color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+              プロジェクトがありません。新しいプロジェクトを作成しましょう！
+            </Typography>
+          )}
+          {projects.map((project, idx) => {
+            const start = project.startDate ? dayjs(project.startDate) : null;
+            const end = project.endDate ? dayjs(project.endDate) : null;
+            let left = 0, width = 0;
+            if (start && end && minDate && totalDays > 0) {
+              left = ((start.diff(minDate, 'day')) / totalDays) * 100;
+              width = ((end.diff(start, 'day') + 1) / totalDays) * 100;
+            }
+            return (
+              <Box key={project.id} sx={{ display: 'flex', alignItems: 'center', mb: 2, height: 40 }}>
+                <Box sx={{ width: 120, minWidth: 120, pr: 2 }}>
+                  <Typography variant="body1" noWrap>{project.name}</Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {project.startDate || '未設定'} ~ {project.endDate || '未設定'}
+                  </Typography>
                 </Box>
-              ) : (
-                <Typography color="text.secondary">このプロジェクトのタスクはありません。</Typography>
-              )}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                <Box sx={{ flex: 1, position: 'relative', height: 24, background: '#f0f0f0', borderRadius: 1 }}>
+                  {start && end && minDate ? (
+                    <Box sx={{
+                      position: 'absolute',
+                      left: `${left}%`,
+                      width: `${width}%`,
+                      height: 24,
+                      background: '#1976d2',
+                      borderRadius: 1,
+                      transition: 'all 0.3s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'white',
+                      px: 1,
+                      fontSize: 14
+                    }}>
+                      {project.name}
+                    </Box>
+                  ) : (
+                    <Box sx={{ position: 'absolute', left: 0, width: '100%', height: 24, background: '#ccc', borderRadius: 1, color: '#fff', display: 'flex', alignItems: 'center', px: 1, fontSize: 14 }}>
+                      期間未設定
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
       </Box>
       <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
         <DialogTitle>{editProject ? 'プロジェクト編集' : '新規プロジェクト作成'}</DialogTitle>
@@ -192,6 +211,26 @@ export default function ProjectListPage() {
             multiline
             rows={3}
             value={formData.description}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            label="開始日"
+            name="startDate"
+            type="date"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={formData.startDate}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            label="終了日"
+            name="endDate"
+            type="date"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={formData.endDate}
             onChange={handleChange}
           />
         </DialogContent>
