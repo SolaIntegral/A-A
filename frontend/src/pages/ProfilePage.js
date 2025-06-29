@@ -79,25 +79,25 @@ export default function MemoryPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>メモリーページ</Typography>
+      <Typography variant="h4" gutterBottom>Memory Page</Typography>
       <Typography color="text.secondary" sx={{ mb: 3 }}>
-        完了したタスクやプロジェクトの「学び」や「振り返り」を記録・参照できます。
+        You can record and review your learnings and reflections for completed tasks and projects here.
       </Typography>
 
       <Paper sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h5" gutterBottom>完了したタスク</Typography>
+        <Typography variant="h5" gutterBottom>Completed Tasks</Typography>
         {completedTasks.length === 0 && (
-          <Typography color="text.secondary">完了したタスクはありません。</Typography>
+          <Typography color="text.secondary">No completed tasks.</Typography>
         )}
         {completedTasks.map(task => (
           <Card key={task.id} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="subtitle1">{task.title} {task.project && <span style={{ color: '#1976d2' }}>#{task.project}</span>}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                完了日: {task.completedAt ? new Date(task.completedAt.seconds * 1000).toLocaleDateString() : '-'}
+                Completed: {task.completedAt ? new Date(task.completedAt.seconds * 1000).toLocaleDateString() : '-'}
               </Typography>
               <TextField
-                label="学んだこと・振り返り"
+                label="Learning / Reflection"
                 fullWidth
                 multiline
                 minRows={2}
@@ -112,26 +112,26 @@ export default function MemoryPage() {
                 variant="contained"
                 onClick={() => handleSaveMemo('task', task)}
                 disabled={loading}
-              >保存</Button>
+              >Save</Button>
             </CardActions>
           </Card>
         ))}
       </Paper>
 
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>完了したプロジェクト</Typography>
+        <Typography variant="h5" gutterBottom>Completed Projects</Typography>
         {completedProjects.length === 0 && (
-          <Typography color="text.secondary">完了したプロジェクトはありません。</Typography>
+          <Typography color="text.secondary">No completed projects.</Typography>
         )}
         {completedProjects.map(project => (
           <Card key={project.id} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="subtitle1">{project.name}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                期間: {project.startDate || '-'} ~ {project.endDate || '-'}
+                Period: {project.startDate || '-'} ~ {project.endDate || '-'}
               </Typography>
               <TextField
-                label="学んだこと・振り返り"
+                label="Learning / Reflection"
                 fullWidth
                 multiline
                 minRows={2}
@@ -146,7 +146,7 @@ export default function MemoryPage() {
                 variant="contained"
                 onClick={() => handleSaveMemo('project', project)}
                 disabled={loading}
-              >保存</Button>
+              >Save</Button>
             </CardActions>
           </Card>
         ))}

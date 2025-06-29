@@ -133,17 +133,17 @@ export default function ProjectListPage() {
   return (
     <Container maxWidth="md">
       <Box sx={{ mt: 4, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4">プロジェクトタイムライン</Typography>
+        <Typography variant="h4">Project Timeline</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpenForm()}>
-          新規作成
+          Add Project
         </Button>
       </Box>
-      {/* タイムライン表示 */}
+      {/* Timeline View */}
       <Box sx={{ overflowX: 'auto', mb: 4, border: '1px solid #eee', borderRadius: 2, p: 2, background: '#fafbfc' }}>
         <Box sx={{ minWidth: 600 }}>
           {projects.length === 0 && (
             <Typography color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-              プロジェクトがありません。新しいプロジェクトを作成しましょう！
+              No projects. Let's add a new project!
             </Typography>
           )}
           {projects.map((project, idx) => {
@@ -159,7 +159,7 @@ export default function ProjectListPage() {
                 <Box sx={{ width: 120, minWidth: 120, pr: 2 }}>
                   <Typography variant="body1" noWrap>{project.name}</Typography>
                   <Typography variant="caption" color="text.secondary" noWrap>
-                    {project.startDate || '未設定'} ~ {project.endDate || '未設定'}
+                    {project.startDate || 'N/A'} ~ {project.endDate || 'N/A'}
                   </Typography>
                 </Box>
                 <Box sx={{ flex: 1, position: 'relative', height: 24, background: '#f0f0f0', borderRadius: 1 }}>
@@ -182,7 +182,7 @@ export default function ProjectListPage() {
                     </Box>
                   ) : (
                     <Box sx={{ position: 'absolute', left: 0, width: '100%', height: 24, background: '#ccc', borderRadius: 1, color: '#fff', display: 'flex', alignItems: 'center', px: 1, fontSize: 14 }}>
-                      期間未設定
+                      No period set
                     </Box>
                   )}
                 </Box>
@@ -192,12 +192,12 @@ export default function ProjectListPage() {
         </Box>
       </Box>
       <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
-        <DialogTitle>{editProject ? 'プロジェクト編集' : '新規プロジェクト作成'}</DialogTitle>
+        <DialogTitle>{editProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="normal"
-            label="プロジェクト名"
+            label="Project Name"
             name="name"
             fullWidth
             value={formData.name}
@@ -205,7 +205,7 @@ export default function ProjectListPage() {
           />
           <TextField
             margin="normal"
-            label="説明"
+            label="Description"
             name="description"
             fullWidth
             multiline
@@ -215,7 +215,7 @@ export default function ProjectListPage() {
           />
           <TextField
             margin="normal"
-            label="開始日"
+            label="Start Date"
             name="startDate"
             type="date"
             fullWidth
@@ -225,7 +225,7 @@ export default function ProjectListPage() {
           />
           <TextField
             margin="normal"
-            label="終了日"
+            label="End Date"
             name="endDate"
             type="date"
             fullWidth
@@ -235,8 +235,8 @@ export default function ProjectListPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseForm}>キャンセル</Button>
-          <Button onClick={handleSubmit} variant="contained" disabled={loading}>{editProject ? '更新' : '作成'}</Button>
+          <Button onClick={handleCloseForm}>Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained" disabled={loading}>{editProject ? 'Update' : 'Add'}</Button>
         </DialogActions>
       </Dialog>
     </Container>

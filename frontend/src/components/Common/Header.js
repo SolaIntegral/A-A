@@ -40,21 +40,21 @@ export default function Header() {
         {user ? (
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button color="inherit" onClick={() => navigate('/tasks')}>
-              タスク一覧
+              Task List
             </Button>
             <Button color="inherit" onClick={() => navigate('/projects')}>
-              プロジェクト
+              Projects
             </Button>
             <Button color="inherit" onClick={() => navigate('/profile')}>
-              プロフィール
+              Memory
             </Button>
             <Button color="inherit" onClick={handleLogout}>
-              ログアウト
+              Logout
             </Button>
           </Box>
         ) : (
           <Button color="inherit" onClick={() => navigate('/auth')}>
-            ログイン
+            Login
           </Button>
         )}
       </Toolbar>

@@ -64,7 +64,7 @@ export default function TaskListPage() {
       <Box sx={{ mt: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
-            タスク一覧
+            Task List
           </Typography>
           <Button
             variant="contained"
@@ -72,26 +72,26 @@ export default function TaskListPage() {
             startIcon={<Add />}
             onClick={() => setOpenTaskForm(true)}
           >
-            新規作成
+            Add Task
           </Button>
         </Box>
 
-        {/* タスク追加モーダル */}
+        {/* Task Add Modal */}
         <Dialog open={openTaskForm} onClose={() => setOpenTaskForm(false)} maxWidth="sm" fullWidth>
-          <DialogTitle>新規タスク作成</DialogTitle>
+          <DialogTitle>Add New Task</DialogTitle>
           <DialogContent>
             <TaskForm onClose={() => setOpenTaskForm(false)} />
           </DialogContent>
         </Dialog>
 
-        {/* 未完了タスクセクション */}
+        {/* Incomplete Tasks Section */}
         <Typography variant="h6" gutterBottom>
-          未完了のタスク ({incompleteTasks.length})
+          Incomplete Tasks ({incompleteTasks.length})
         </Typography>
         
         {incompleteTasks.length === 0 ? (
           <Typography color="text.secondary" sx={{ mb: 3 }}>
-            タスクがありません。新しいタスクを作成しましょう！
+            No tasks. Let's add a new task!
           </Typography>
         ) : (
           <Box sx={{ mb: 3 }}>
@@ -105,7 +105,7 @@ export default function TaskListPage() {
           </Box>
         )}
 
-        {/* 完了済みタスクセクション */}
+        {/* Completed Tasks Section */}
         {completedTasks.length > 0 && (
           <Box>
             <Button
@@ -114,7 +114,7 @@ export default function TaskListPage() {
               endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
               sx={{ mb: 2 }}
             >
-              完了済みのタスク ({completedTasks.length})
+              Completed Tasks ({completedTasks.length})
             </Button>
             
             <Collapse in={expanded}>
