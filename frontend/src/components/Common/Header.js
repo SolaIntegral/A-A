@@ -42,8 +42,8 @@ export default function Header() {
             <Button color="inherit" onClick={() => navigate('/tasks')}>
               タスク一覧
             </Button>
-            <Button color="inherit" onClick={() => navigate('/tasks/add')}>
-              タスク追加
+            <Button color="inherit" onClick={() => navigate('/projects')}>
+              プロジェクト
             </Button>
             <Button color="inherit" onClick={() => navigate('/profile')}>
               プロフィール

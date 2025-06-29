@@ -134,6 +134,14 @@ export default function TaskCard({ task, onStartTimer }) {
               </Typography>
             )}
           </Box>
+          {/* タグ表示 */}
+          {Array.isArray(task.tags) && task.tags.length > 0 && (
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+              {task.tags.map((tag, idx) => (
+                <Chip key={idx} label={`#${tag}`} size="small" variant="outlined" color="secondary" />
+              ))}
+            </Box>
+          )}
         </CardContent>
         
         <CardActions>

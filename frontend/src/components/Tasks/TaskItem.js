@@ -165,6 +165,10 @@ export default function TaskItem({ task, onUpdate, onStartTimer }) {
                     color="error" 
                   />
                 )}
+                {/* タグ表示 */}
+                {Array.isArray(task.tags) && task.tags.length > 0 && task.tags.map((tag, idx) => (
+                  <Chip key={idx} label={`#${tag}`} size="small" variant="outlined" color="secondary" />
+                ))}
               </Box>
 
               {task.memo && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -37,10 +37,23 @@ export default function TaskForm({ task = null, onClose }) {
     estimatedTime: task?.estimatedTime || '',
     skillCategory: task?.skillCategory || '',
     taskCategory: task?.taskCategory || '',
-    memo: task?.memo || ''
+    memo: task?.memo || '',
+    tags: task?.tags ? task.tags.join(', ') : '',
+    project: task?.project || ''
   });
+  const [projects, setProjects] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // プロジェクト一覧を取得
+    const fetchProjects = async () => {
+      const { db } = await initFirebase();
+      const snap = await db.collection('projects').get();
+      setProjects(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchProjects();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,8 +68,19 @@ export default function TaskForm({ task = null, onClose }) {
 
     try {
       const { db } = await initFirebase();
+      let tagsArray = formData.tags
+        .split(/[\s,]+/)
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+      if (formData.project) {
+        if (!tagsArray.includes(formData.project)) {
+          tagsArray.push(formData.project);
+        }
+      }
       const taskData = {
         ...formData,
+        tags: tagsArray,
+        project: formData.project,
         userId: user.uid,
         completed: false,
         snoozeCount: 0,
@@ -172,6 +196,29 @@ export default function TaskForm({ task = null, onClose }) {
         onChange={handleChange('memo')}
         margin="normal"
       />
+
+      <TextField
+        fullWidth
+        label="ハッシュタグ（カンマ・スペース区切り可）"
+        value={formData.tags}
+        onChange={handleChange('tags')}
+        margin="normal"
+        placeholder="#例1, #例2"
+      />
+
+      <FormControl fullWidth margin="normal">
+        <InputLabel>プロジェクト</InputLabel>
+        <Select
+          value={formData.project}
+          onChange={handleChange('project')}
+          label="プロジェクト"
+        >
+          <MenuItem value=""><em>未選択</em></MenuItem>
+          {projects.map(project => (
+            <MenuItem key={project.id} value={project.name}>{project.name}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       {error && (
         <Alert severity="error" sx={{ mt: 2 }}>

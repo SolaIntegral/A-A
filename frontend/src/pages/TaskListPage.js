@@ -4,18 +4,23 @@ import {
   Typography,
   Button,
   Box,
-  Collapse
+  Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent
 } from '@mui/material';
 import { Add, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../components/Auth/AuthProvider';
 import { initFirebase } from '../firebase';
 import TaskCard from '../components/Tasks/TaskCard';
+import TaskForm from '../components/Tasks/TaskForm';
 
 export default function TaskListPage() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  const [openTaskForm, setOpenTaskForm] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -65,11 +70,19 @@ export default function TaskListPage() {
             variant="contained"
             color="primary"
             startIcon={<Add />}
-            onClick={() => window.location.href = '/tasks/add'}
+            onClick={() => setOpenTaskForm(true)}
           >
             新規作成
           </Button>
         </Box>
+
+        {/* タスク追加モーダル */}
+        <Dialog open={openTaskForm} onClose={() => setOpenTaskForm(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>新規タスク作成</DialogTitle>
+          <DialogContent>
+            <TaskForm onClose={() => setOpenTaskForm(false)} />
+          </DialogContent>
+        </Dialog>
 
         {/* 未完了タスクセクション */}
         <Typography variant="h6" gutterBottom>
