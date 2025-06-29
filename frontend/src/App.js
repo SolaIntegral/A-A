@@ -8,6 +8,7 @@ import TaskListPage from './pages/TaskListPage';
 import TaskFormPage from './pages/TaskFormPage';
 import TaskTimerPage from './pages/TaskTimerPage';
 import ProfilePage from './pages/ProfilePage';
+import ProjectListPage from './pages/ProjectListPage';
 import { CssBaseline } from '@mui/material';
 
 function PrivateRoute({ children }) {
@@ -58,6 +59,11 @@ function AppRoutes() {
         <Route path="/profile" element={
           <PrivateRoute>
             <ProfilePage />
+          </PrivateRoute>
+        } />
+        <Route path="/projects" element={
+          <PrivateRoute>
+            <ProjectListPage />
           </PrivateRoute>
         } />
       </Routes>

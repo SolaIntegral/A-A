@@ -12,5 +12,30 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "rules_version": "2",
+  "service": {
+    "cloud.firestore": {
+      "rules": {
+        "match": {
+          "/databases/{database}/documents": {
+            "match": {
+              "/tasks/{taskId}": {
+                "allow": {
+                  "read": true,
+                  "write": true
+                }
+              },
+              "/projects/{projectId}": {
+                "allow": {
+                  "read": true,
+                  "write": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

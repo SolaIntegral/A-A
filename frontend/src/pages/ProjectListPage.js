@@ -10,13 +10,17 @@ import {
   DialogActions,
   TextField,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction
+  Card,
+  CardContent,
+  CardActions,
+  Collapse,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Chip
 } from '@mui/material';
-import { Add, Edit, Delete } from '@mui/icons-material';
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { Add, Edit, Delete, ExpandMore } from '@mui/icons-material';
+import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, getDocs } from 'firebase/firestore';
 import { useAuth } from '../components/Auth/AuthProvider';
 import { initFirebase } from '../firebase';
 
@@ -27,6 +31,8 @@ export default function ProjectListPage() {
   const [editProject, setEditProject] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
   const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(null);
+  const [tasksByProject, setTasksByProject] = useState({});
 
   useEffect(() => {
     if (!user) return;
@@ -40,6 +46,22 @@ export default function ProjectListPage() {
     };
     fetchProjects();
   }, [user]);
+
+  // プロジェクトごとのタスクを取得
+  useEffect(() => {
+    if (!user || projects.length === 0) return;
+    const fetchTasks = async () => {
+      const { db } = await initFirebase();
+      let newTasksByProject = {};
+      for (const project of projects) {
+        const q = query(collection(db, 'tasks'), where('project', '==', project.name), where('userId', '==', user.uid));
+        const snap = await getDocs(q);
+        newTasksByProject[project.id] = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      }
+      setTasksByProject(newTasksByProject);
+    };
+    fetchTasks();
+  }, [projects, user]);
 
   const handleOpenForm = (project = null) => {
     setEditProject(project);
@@ -95,26 +117,61 @@ export default function ProjectListPage() {
     }
   };
 
+  const handleAccordionChange = (projectId) => {
+    setExpanded(expanded === projectId ? null : projectId);
+  };
+
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Box sx={{ mt: 4, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h4">プロジェクト一覧</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpenForm()}>新規作成</Button>
+        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpenForm()}>
+          新規作成
+        </Button>
       </Box>
-      <List>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {projects.length === 0 && (
+          <Typography color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+            プロジェクトがありません。新しいプロジェクトを作成しましょう！
+          </Typography>
+        )}
         {projects.map(project => (
-          <ListItem key={project.id} divider>
-            <ListItemText
-              primary={project.name}
-              secondary={project.description}
-            />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={() => handleOpenForm(project)}><Edit /></IconButton>
-              <IconButton edge="end" color="error" onClick={() => handleDelete(project.id)}><Delete /></IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+          <Accordion key={project.id} expanded={expanded === project.id} onChange={() => handleAccordionChange(project.id)}>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <Typography variant="h6">{project.name}</Typography>
+                <Typography variant="body2" color="text.secondary">{project.description}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton onClick={e => { e.stopPropagation(); handleOpenForm(project); }}><Edit /></IconButton>
+                <IconButton color="error" onClick={e => { e.stopPropagation(); handleDelete(project.id); }}><Delete /></IconButton>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>タスク一覧</Typography>
+              {tasksByProject[project.id] && tasksByProject[project.id].length > 0 ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {tasksByProject[project.id].map(task => (
+                    <Card key={task.id} variant="outlined">
+                      <CardContent>
+                        <Typography variant="subtitle1">{task.title}</Typography>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+                          {Array.isArray(task.tags) && task.tags.map((tag, idx) => (
+                            <Chip key={idx} label={`#${tag}`} size="small" variant="outlined" color="secondary" />
+                          ))}
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{task.memo}</Typography>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              ) : (
+                <Typography color="text.secondary">このプロジェクトのタスクはありません。</Typography>
+              )}
+            </AccordionDetails>
+          </Accordion>
         ))}
-      </List>
+      </Box>
       <Dialog open={openForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
         <DialogTitle>{editProject ? 'プロジェクト編集' : '新規プロジェクト作成'}</DialogTitle>
         <DialogContent>

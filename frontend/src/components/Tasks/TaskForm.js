@@ -10,7 +10,7 @@ import {
   Typography,
   Alert
 } from '@mui/material';
-import { addDoc, collection, updateDoc, doc } from 'firebase/firestore';
+import { addDoc, collection, updateDoc, doc, getDocs } from 'firebase/firestore';
 import { useAuth } from '../Auth/AuthProvider';
 import { initFirebase } from '../../firebase';
 
@@ -49,7 +49,7 @@ export default function TaskForm({ task = null, onClose }) {
     // プロジェクト一覧を取得
     const fetchProjects = async () => {
       const { db } = await initFirebase();
-      const snap = await db.collection('projects').get();
+      const snap = await getDocs(collection(db, 'projects'));
       setProjects(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
     fetchProjects();
